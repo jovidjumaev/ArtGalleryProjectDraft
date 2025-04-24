@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Mailing List - Furman Art Gallery</title>
     <!-- Modern CSS Reset -->
@@ -15,7 +15,7 @@
         :root {
             --primary-color: #1a1a1a;
             --accent-color: #C7A464;
-            --bg-color: #f9f9f9;
+            --bg-color: #f0ebe1;
             --text-color: #2c2c2c;
             --header-height: 80px;
             --border-radius: 16px;
@@ -28,6 +28,19 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(199, 164, 100, 0.05), rgba(199, 164, 100, 0.02));
+            pointer-events: none;
+            z-index: 0;
         }
 
         .header {
@@ -60,11 +73,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-link:hover, .nav-link.active {
             color: white !important;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
         }
 
         .nav-link i {
@@ -75,18 +89,21 @@
             margin-top: calc(var(--header-height) + 40px);
             margin-bottom: 50px;
             position: relative;
+            z-index: 1;
         }
 
         .form-container {
             background-color: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             padding: 50px;
             position: relative;
             transition: var(--transition);
             border: 1px solid rgba(0,0,0,0.05);
             max-width: 1000px;
             margin: 0 auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .section-title {
@@ -248,7 +265,6 @@
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
-            color: var(--accent-color);
         }
 
         .alert {
@@ -278,6 +294,86 @@
             border-left: 4px solid #ff7675;
         }
 
+        .user-menu {
+            position: relative;
+            margin-left: 1rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .user-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-button:hover {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .user-menu-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .user-menu:hover .user-menu-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .user-menu-item:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        .user-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
         .gallery-logo {
             width: 200px;
             margin-bottom: 2rem;
@@ -290,6 +386,105 @@
         .preferences-section .form-label {
             margin-bottom: 0.5rem;
         }
+
+        .forms-menu {
+            position: relative;
+            margin-left: 0.5rem;
+        }
+
+        .forms-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .forms-button:hover, .forms-menu.active .forms-button {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .forms-dropdown {
+            position: absolute;
+            top: calc(100% - 5px);
+            right: 0;
+            padding-top: 10px;
+            background: transparent;
+            min-width: 220px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .forms-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .forms-menu:hover .forms-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .form-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .form-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .form-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .form-section h5 i,
+        .form-label i,
+        .select-wrapper .fa-chevron-down,
+        .form-menu-item i {
+            color: var(--accent-color);
+        }
+
+        .form-label i {
+            font-size: 0.8rem;
+        }
+
+        .select-wrapper .fa-chevron-down {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .form-menu-item i {
+            width: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -298,39 +493,76 @@
         <div class="container h-100">
             <div class="d-flex justify-content-between align-items-center header-content">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-palette me-2"></i>
-                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    <a href="/" style="color: white; text-decoration: none;" class="d-flex align-items-center">
+                        <i class="fas fa-palette me-2"></i>
+                        <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    </a>
                 </div>
-                <nav class="d-flex gap-2">
+                <nav class="d-flex gap-2 align-items-center">
                     <a href="/" class="nav-link">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="/add_artwork" class="nav-link">
-                        <i class="fas fa-image"></i> Add Artwork
-                    </a>
-                    <a href="/add_artist" class="nav-link">
-                        <i class="fas fa-palette"></i> Add Artist
-                    </a>
-                    <a href="/add_sale" class="nav-link">
-                        <i class="fas fa-receipt"></i> Add Sale
-                    </a>
-                    <a href="/add_collector" class="nav-link">
-                        <i class="fas fa-star"></i> Add Collector
-                    </a>
-                    <a href="/add_mailing_list" class="nav-link active">
-                        <i class="fas fa-envelope"></i> Join Mailing
-                    </a>
+                    <div class="forms-menu">
+                        <button class="forms-button">
+                            <i class="fas fa-list-alt"></i>
+                            Available Forms
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="forms-dropdown">
+                            <div class="forms-dropdown-content">
+                                <a href="/add_artwork" class="form-menu-item">
+                                    <i class="fas fa-image"></i>
+                                    Add Artwork
+                                </a>
+                                <a href="/add_artist" class="form-menu-item">
+                                    <i class="fas fa-palette"></i>
+                                    Add Artist
+                                </a>
+                                <a href="/add_sale" class="form-menu-item">
+                                    <i class="fas fa-receipt"></i>
+                                    Add Sale
+                                </a>
+                                <a href="/add_collector" class="form-menu-item">
+                                    <i class="fas fa-star"></i>
+                                    Add Collector
+                                </a>
+                                <a href="/add_mailing_list" class="form-menu-item active">
+                                    <i class="fas fa-envelope"></i>
+                                    Join Mailing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-button">
+                            <i class="fas fa-user-circle"></i>
+                            {{ session.get('user_name', 'User') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-menu-dropdown">
+                            <div class="user-menu-dropdown-content">
+                                <a href="/profile" class="user-menu-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    Profile Settings
+                                </a>
+                                <a href="/logout" class="user-menu-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
             </div>
         </div>
     </div>
 
     <div class="container main-content">
-        <div class="form-container">
+<div class="form-container">
             <h2 class="section-title">Join Our Mailing List</h2>
             <p class="section-subtitle">Stay updated with our latest exhibitions, new artworks, and special events.</p>
 
-            {% if success %}
+  {% if success %}
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">✨ Successfully Joined!</h4>
                     <p class="mb-0">Thank you for joining our mailing list. You'll receive updates about our latest exhibitions and events.</p>
@@ -338,8 +570,8 @@
                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                     <a href="/" class="btn btn-secondary">Return to Home</a>
                 </div>
-            {% else %}
-                {% if error %}
+  {% else %}
+    {% if error %}
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-circle"></i>
                         <div>
@@ -347,7 +579,7 @@
                             <p class="mb-0">{{ error }}</p>
                         </div>
                     </div>
-                {% endif %}
+    {% endif %}
 
                 <form method="POST" action="/add_mailing_list" class="needs-validation" novalidate>
                     <!-- Date Information -->
@@ -440,7 +672,7 @@
                     <!-- Art Preferences -->
                     <div class="form-section">
                         <h5><i class="fas fa-heart"></i> Art Preferences</h5>
-                        <p class="text-muted mb-4">Help us understand your art interests (optional):</p>
+                        <p class="text-muted mb-4">Help us understand your art interests. All fields are optional - feel free to fill in any that interest you:</p>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">
@@ -448,10 +680,10 @@
                                 </label>
                                 <input type="text" class="form-control" name="preferredArtistFirstName" 
                                        value="{{ request.form.preferredArtistFirstName }}" 
-                                       pattern="[A-Za-z]{1,15}" maxlength="15"
-                                       title="Please enter up to 15 letters only"
-                                       placeholder="Enter artist's first name">
-                                <div class="form-text">Maximum 15 letters</div>
+                                       pattern="[A-Za-z]{0,15}" maxlength="15"
+                                       title="Please enter up to 15 letters only (optional)"
+                                       placeholder="Enter artist's first name (optional)">
+                                <div class="form-text">Maximum 15 letters (optional)</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">
@@ -459,10 +691,10 @@
                                 </label>
                                 <input type="text" class="form-control" name="preferredArtistLastName" 
                                        value="{{ request.form.preferredArtistLastName }}" 
-                                       pattern="[A-Za-z]{1,15}" maxlength="15"
-                                       title="Please enter up to 15 letters only"
-                                       placeholder="Enter artist's last name">
-                                <div class="form-text">Maximum 15 letters</div>
+                                       pattern="[A-Za-z]{0,15}" maxlength="15"
+                                       title="Please enter up to 15 letters only (optional)"
+                                       placeholder="Enter artist's last name (optional)">
+                                <div class="form-text">Maximum 15 letters (optional)</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label">
@@ -470,7 +702,7 @@
                                 </label>
                                 <div class="select-wrapper">
                                     <select class="form-select" name="preferredType" id="preferredType">
-                                        <option value="" selected disabled>Select Type</option>
+                                        <option value="">Select Type (Optional)</option>
                                         <option value="Painting">Painting</option>
                                         <option value="Sculpture">Sculpture</option>
                                         <option value="Photography">Photography</option>
@@ -488,7 +720,7 @@
                                 </label>
                                 <div class="select-wrapper">
                                     <select class="form-select" name="preferredMedium" id="preferredMedium">
-                                        <option value="" selected disabled>Select Medium</option>
+                                        <option value="">Select Medium (Optional)</option>
                                         <option value="Oil">Oil</option>
                                         <option value="Acrylic">Acrylic</option>
                                         <option value="Watercolor">Watercolor</option>
@@ -506,7 +738,7 @@
                                 </label>
                                 <div class="select-wrapper">
                                     <select class="form-select" name="preferredStyle" id="preferredStyle">
-                                        <option value="" selected disabled>Select Style</option>
+                                        <option value="">Select Style (Optional)</option>
                                         <option value="Abstract">Abstract</option>
                                         <option value="Realism">Realism</option>
                                         <option value="Impressionism">Impressionism</option>
@@ -530,9 +762,9 @@
                             <i class="fas fa-paper-plane"></i> Join Mailing List
                         </button>
                     </div>
-                </form>
-            {% endif %}
-        </div>
+    </form>
+  {% endif %}
+</div>
     </div>
 
     <!-- Font Awesome -->
@@ -552,9 +784,12 @@
                     const lastName = form.querySelector('input[name="lastName"]');
                     const firstName = form.querySelector('input[name="firstName"]');
                     const state = form.querySelector('input[name="state"]');
+                    const preferredArtistFirstName = form.querySelector('input[name="preferredArtistFirstName"]');
+                    const preferredArtistLastName = form.querySelector('input[name="preferredArtistLastName"]');
                     
                     // Name validation function
                     const isValidName = (name) => /^[A-Za-z]{1,15}$/.test(name);
+                    const isValidOptionalName = (name) => name === '' || /^[A-Za-z]{1,15}$/.test(name);
                     // State validation function
                     const isValidState = (state) => /^[A-Z]{2}$/.test(state);
                     
@@ -585,6 +820,23 @@
                         state.setCustomValidity('');
                     }
 
+                    // Only validate preferred artist names if they are not empty
+                    if (preferredArtistFirstName.value && !isValidOptionalName(preferredArtistFirstName.value)) {
+                        preferredArtistFirstName.setCustomValidity('If provided, please enter up to 15 letters only');
+                        event.preventDefault();
+                        event.stopPropagation();
+                    } else {
+                        preferredArtistFirstName.setCustomValidity('');
+                    }
+
+                    if (preferredArtistLastName.value && !isValidOptionalName(preferredArtistLastName.value)) {
+                        preferredArtistLastName.setCustomValidity('If provided, please enter up to 15 letters only');
+                        event.preventDefault();
+                        event.stopPropagation();
+                    } else {
+                        preferredArtistLastName.setCustomValidity('');
+                    }
+
                     if (!form.checkValidity()) {
                         event.preventDefault();
                         event.stopPropagation();
@@ -597,8 +849,8 @@
 
         // Add input event listeners for real-time validation
         document.addEventListener('DOMContentLoaded', function() {
-            // Validate all name fields (letters only)
-            const nameInputs = document.querySelectorAll('input[name="lastName"], input[name="firstName"], input[name="preferredArtistFirstName"], input[name="preferredArtistLastName"]');
+            // Validate name fields (letters only)
+            const nameInputs = document.querySelectorAll('input[name="lastName"], input[name="firstName"]');
             nameInputs.forEach(input => {
                 input.addEventListener('input', function() {
                     this.value = this.value.replace(/[^A-Za-z]/g, '');
@@ -608,84 +860,21 @@
                 });
             });
 
-            // Validate state (2 capital letters)
-            const stateInput = document.querySelector('input[name="state"]');
-            if (stateInput) {
-                stateInput.addEventListener('input', function() {
-                    this.value = this.value.replace(/[^A-Za-z]/g, '').toUpperCase();
-                    if (this.value.length > 2) {
-                        this.value = this.value.slice(0, 2);
+            // Validate preferred artist name fields (optional, letters only)
+            const artistNameInputs = document.querySelectorAll('input[name="preferredArtistFirstName"], input[name="preferredArtistLastName"]');
+            artistNameInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value) {  // Only validate if there's a value
+                        this.value = this.value.replace(/[^A-Za-z]/g, '');
+                        if (this.value.length > 15) {
+                            this.value = this.value.slice(0, 15);
+                        }
                     }
                 });
-            }
-
-            // Validate numeric fields
-            const numericFields = [
-                { element: document.querySelector('input[name="zip"]'), maxLength: 5 },
-                { element: document.querySelector('input[name="areaCode"]'), maxLength: 3 },
-                { element: document.querySelector('input[name="telephoneNumber"]'), maxLength: 7 }
-            ];
-
-            numericFields.forEach(field => {
-                if (field.element) {
-                    field.element.addEventListener('input', function() {
-                        this.value = this.value.replace(/[^0-9]/g, '');
-                        if (this.value.length > field.maxLength) {
-                            this.value = this.value.slice(0, field.maxLength);
-                        }
-                    });
-                }
             });
 
-            // Form validation
-            const form = document.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', function(event) {
-                    let isValid = true;
-
-                    // Validate names
-                    nameInputs.forEach(input => {
-                        if (!/^[A-Za-z]{1,15}$/.test(input.value)) {
-                            input.setCustomValidity('Please enter up to 15 letters only');
-                            isValid = false;
-                        } else {
-                            input.setCustomValidity('');
-                        }
-                    });
-
-                    // Validate state
-                    if (stateInput && !/^[A-Z]{2}$/.test(stateInput.value)) {
-                        stateInput.setCustomValidity('Please enter exactly 2 capital letters');
-                        isValid = false;
-                    } else if (stateInput) {
-                        stateInput.setCustomValidity('');
-                    }
-
-                    // Validate numeric fields
-                    numericFields.forEach(field => {
-                        if (field.element) {
-                            const pattern = new RegExp(`^[0-9]{${field.maxLength}}$`);
-                            if (!pattern.test(field.element.value)) {
-                                field.element.setCustomValidity(`Please enter exactly ${field.maxLength} digits`);
-                                isValid = false;
-                            } else {
-                                field.element.setCustomValidity('');
-                            }
-                        }
-                    });
-
-                    if (!isValid) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                });
-            }
-        });
-
-        // Handle "Other" options
-        document.addEventListener('DOMContentLoaded', function() {
+            // Handle "Other" options
             const fields = ['Type', 'Medium', 'Style'];
-            
             fields.forEach(field => {
                 const select = document.getElementById(`preferred${field}`);
                 const otherInput = document.getElementById(`other${field}`);
@@ -694,13 +883,37 @@
                     select.addEventListener('change', function() {
                         if (this.value === 'other') {
                             otherInput.classList.remove('d-none');
-                            otherInput.required = true;
                         } else {
                             otherInput.classList.add('d-none');
-                            otherInput.required = false;
                             otherInput.value = '';
                         }
                     });
+                }
+            });
+
+            // Remove the click handler for user menu
+            document.addEventListener('DOMContentLoaded', function() {
+                // Keep forms menu click handler
+                const formsMenus = document.querySelectorAll('.forms-menu');
+                formsMenus.forEach(menu => {
+                    if (!menu.contains(event.target)) {
+                        menu.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        function toggleFormsMenu(button) {
+            const menu = button.closest('.forms-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close the forms menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const formsMenus = document.querySelectorAll('.forms-menu');
+            formsMenus.forEach(menu => {
+                if (!menu.contains(event.target)) {
+                    menu.classList.remove('active');
                 }
             });
         });

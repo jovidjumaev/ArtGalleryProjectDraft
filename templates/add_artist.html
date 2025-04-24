@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Artist - Furman Art Gallery</title>
     <!-- Modern CSS Reset -->
@@ -11,11 +11,11 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <style>
+  <style>
         :root {
             --primary-color: #1a1a1a;
             --accent-color: #C7A464;
-            --bg-color: #f9f9f9;
+            --bg-color: #f0ebe1;
             --text-color: #2c2c2c;
             --header-height: 80px;
             --border-radius: 16px;
@@ -28,6 +28,19 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(199, 164, 100, 0.05), rgba(199, 164, 100, 0.02));
+            pointer-events: none;
+            z-index: 0;
         }
 
         .header {
@@ -60,11 +73,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-link:hover, .nav-link.active {
             color: white !important;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
         }
 
         .nav-link i {
@@ -75,18 +89,21 @@
             margin-top: calc(var(--header-height) + 40px);
             margin-bottom: 50px;
             position: relative;
+            z-index: 1;
         }
 
         .form-container {
             background-color: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             padding: 50px;
             position: relative;
             transition: var(--transition);
             border: 1px solid rgba(0,0,0,0.05);
             max-width: 1000px;
             margin: 0 auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .section-title {
@@ -277,7 +294,172 @@
             color: #d63031;
             border-left: 4px solid #ff7675;
         }
-    </style>
+
+        .user-menu {
+            position: relative;
+            margin-left: 1rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .user-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-button:hover {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .user-menu:hover .user-menu-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .user-menu-item:first-child {
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .user-menu-item:last-child {
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .user-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .user-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .forms-menu {
+            position: relative;
+            margin-left: 0.5rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .forms-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 220px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .forms-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .forms-menu:hover .forms-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .forms-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .forms-button:hover, .forms-menu.active .forms-button {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .form-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .form-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .form-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+  </style>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -285,39 +467,74 @@
         <div class="container h-100">
             <div class="d-flex justify-content-between align-items-center header-content">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-palette me-2"></i>
-                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    <a href="/" style="color: white; text-decoration: none;" class="d-flex align-items-center">
+                        <i class="fas fa-palette me-2"></i>
+                        <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    </a>
                 </div>
-                <nav class="d-flex gap-2">
+                <nav class="d-flex gap-2 align-items-center">
                     <a href="/" class="nav-link">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="/add_artwork" class="nav-link">
-                        <i class="fas fa-image"></i> Add Artwork
-                    </a>
-                    <a href="/add_artist" class="nav-link active">
-                        <i class="fas fa-palette"></i> Add Artist
-                    </a>
-                    <a href="/add_sale" class="nav-link">
-                        <i class="fas fa-receipt"></i> Add Sale
-                    </a>
-                    <a href="/add_collector" class="nav-link">
-                        <i class="fas fa-star"></i> Add Collector
-                    </a>
-                    <a href="/add_mailing_list" class="nav-link">
-                        <i class="fas fa-envelope"></i> Join Mailing
-                    </a>
+                    <div class="forms-menu">
+                        <button class="forms-button" onclick="toggleFormsMenu(this)">
+                            <i class="fas fa-list-alt"></i>
+                            Available Forms
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="forms-dropdown">
+                            <div class="forms-dropdown-content">
+                                <a href="/add_artwork" class="form-menu-item">
+                                    <i class="fas fa-image"></i>
+                                    Add Artwork
+                                </a>
+                                <a href="/add_artist" class="form-menu-item active">
+                                    <i class="fas fa-palette"></i>
+                                    Add Artist
+                                </a>
+                                <a href="/add_sale" class="form-menu-item">
+                                    <i class="fas fa-receipt"></i>
+                                    Add Sale
+                                </a>
+                                <a href="/add_collector" class="form-menu-item">
+                                    <i class="fas fa-star"></i>
+                                    Add Collector
+                                </a>
+                                <a href="/add_mailing_list" class="form-menu-item">
+                                    <i class="fas fa-envelope"></i>
+                                    Join Mailing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-button">
+                            <i class="fas fa-user-circle"></i>
+                            {{ session.get('user_name', 'User') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-menu-dropdown">
+                            <a href="/profile" class="user-menu-item">
+                                <i class="fas fa-user-cog"></i>
+                                Profile Settings
+                            </a>
+                            <a href="/logout" class="user-menu-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
                 </nav>
             </div>
         </div>
     </div>
 
     <div class="container main-content">
-        <div class="form-container">
+<div class="form-container">
             <h2 class="section-title">Add New Artist</h2>
             <p class="section-subtitle">Register a new artist in our gallery system.</p>
 
-            {% if success %}
+  {% if success %}
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">✨ Artist Successfully Added!</h4>
                     <p class="mb-0">The artist has been successfully registered in our system.</p>
@@ -326,8 +543,8 @@
                     <a href="/add_artist" class="btn btn-primary me-md-2">Add Another Artist</a>
                     <a href="/" class="btn btn-secondary">Return to Home</a>
                 </div>
-            {% else %}
-                {% if error %}
+  {% else %}
+    {% if error %}
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-circle"></i>
                         <div>
@@ -335,7 +552,7 @@
                             <p class="mb-0">{{ error }}</p>
                         </div>
                     </div>
-                {% endif %}
+    {% endif %}
 
                 <form method="POST" class="needs-validation" novalidate>
                     <!-- Interview Information -->
@@ -551,9 +768,9 @@
                             <i class="fas fa-check-circle"></i> Add Artist
                         </button>
                     </div>
-                </form>
-            {% endif %}
-        </div>
+    </form>
+  {% endif %}
+</div>
     </div>
 
     <!-- Font Awesome -->
@@ -563,6 +780,38 @@
     
     <!-- Form validation and other scripts -->
     <script>
+        function toggleFormsMenu(button) {
+            const menu = button.closest('.forms-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close the forms menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const formsMenus = document.querySelectorAll('.forms-menu');
+            formsMenus.forEach(menu => {
+                if (!menu.contains(event.target)) {
+                    menu.classList.remove('active');
+                }
+            });
+        });
+
+        // Add this to handle the user menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenu = document.querySelector('.user-menu');
+            const userButton = userMenu.querySelector('.user-button');
+
+            userButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userMenu.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!userMenu.contains(e.target)) {
+                    userMenu.classList.remove('active');
+                }
+            });
+        });
+
         // Enable Bootstrap form validation
         (function () {
             'use strict'

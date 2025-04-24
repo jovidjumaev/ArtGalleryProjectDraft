@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Purple circle background -->
+    <circle cx="15" cy="15" r="15" fill="#4F2D7F"/>
+    <!-- Bell Tower structure (white) -->
+    <path d="M8 8h14l-1 2H9l-1-2z" fill="white"/> <!-- Top trim -->
+    <path d="M9 10h12v2H9v-2z" fill="white"/> <!-- Upper section -->
+    <!-- Upper arches -->
+    <path d="M10 12h4v5a2 2 0 01-2 2 2 2 0 01-2-2v-5z" fill="white"/>
+    <path d="M16 12h4v5a2 2 0 01-2 2 2 2 0 01-2-2v-5z" fill="white"/>
+    <!-- Middle section -->
+    <path d="M9 19h12v2H9v-2z" fill="white"/>
+    <!-- Lower arches -->
+    <path d="M10 21h4v5a2 2 0 01-2 2 2 2 0 01-2-2v-5z" fill="white"/>
+    <path d="M16 21h4v5a2 2 0 01-2 2 2 2 0 01-2-2v-5z" fill="white"/>
+    <!-- Spire -->
+    <path d="M14.5 4l0.5 4h-2z" fill="white"/>
+    <circle cx="15" cy="7" r="0.5" fill="white"/>
+</svg> 

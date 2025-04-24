@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Collector - Furman Art Gallery</title>
     <!-- Modern CSS Reset -->
@@ -11,11 +11,11 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <style>
+  <style>
         :root {
             --primary-color: #1a1a1a;
             --accent-color: #C7A464;
-            --bg-color: #f9f9f9;
+            --bg-color: #f0ebe1;
             --text-color: #2c2c2c;
             --header-height: 80px;
             --border-radius: 16px;
@@ -28,6 +28,19 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(199, 164, 100, 0.05), rgba(199, 164, 100, 0.02));
+            pointer-events: none;
+            z-index: 0;
         }
 
         .header {
@@ -60,11 +73,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-link:hover, .nav-link.active {
             color: white !important;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
         }
 
         .nav-link i {
@@ -75,18 +89,21 @@
             margin-top: calc(var(--header-height) + 40px);
             margin-bottom: 50px;
             position: relative;
+            z-index: 1;
         }
 
         .form-container {
             background-color: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             padding: 50px;
             position: relative;
             transition: var(--transition);
             border: 1px solid rgba(0,0,0,0.05);
             max-width: 1000px;
             margin: 0 auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .section-title {
@@ -277,7 +294,162 @@
             color: #d63031;
             border-left: 4px solid #ff7675;
         }
-    </style>
+
+        .user-menu {
+            position: relative;
+            margin-left: 1rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .user-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-button:hover {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .user-menu-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .user-menu:hover .user-menu-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .user-menu-item:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        .user-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .forms-menu {
+            position: relative;
+            margin-left: 0.5rem;
+        }
+
+        .forms-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .forms-button:hover, .forms-menu.active .forms-button {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .forms-dropdown {
+            position: absolute;
+            top: calc(100% - 5px);
+            right: 0;
+            padding-top: 10px;
+            background: transparent;
+            min-width: 220px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .forms-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .forms-menu:hover .forms-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .form-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .form-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .form-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+  </style>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -285,39 +457,76 @@
         <div class="container h-100">
             <div class="d-flex justify-content-between align-items-center header-content">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-palette me-2"></i>
-                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    <a href="/" style="color: white; text-decoration: none;" class="d-flex align-items-center">
+                        <i class="fas fa-palette me-2"></i>
+                        <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    </a>
                 </div>
-                <nav class="d-flex gap-2">
+                <nav class="d-flex gap-2 align-items-center">
                     <a href="/" class="nav-link">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="/add_artwork" class="nav-link">
-                        <i class="fas fa-image"></i> Add Artwork
-                    </a>
-                    <a href="/add_artist" class="nav-link">
-                        <i class="fas fa-palette"></i> Add Artist
-                    </a>
-                    <a href="/add_sale" class="nav-link">
-                        <i class="fas fa-receipt"></i> Add Sale
-                    </a>
-                    <a href="/add_collector" class="nav-link active">
-                        <i class="fas fa-star"></i> Add Collector
-                    </a>
-                    <a href="/add_mailing_list" class="nav-link">
-                        <i class="fas fa-envelope"></i> Join Mailing
-                    </a>
+                    <div class="forms-menu">
+                        <button class="forms-button">
+                            <i class="fas fa-list-alt"></i>
+                            Available Forms
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="forms-dropdown">
+                            <div class="forms-dropdown-content">
+                                <a href="/add_artwork" class="form-menu-item">
+                                    <i class="fas fa-image"></i>
+                                    Add Artwork
+                                </a>
+                                <a href="/add_artist" class="form-menu-item">
+                                    <i class="fas fa-palette"></i>
+                                    Add Artist
+                                </a>
+                                <a href="/add_sale" class="form-menu-item">
+                                    <i class="fas fa-receipt"></i>
+                                    Add Sale
+                                </a>
+                                <a href="/add_collector" class="form-menu-item active">
+                                    <i class="fas fa-star"></i>
+                                    Add Collector
+                                </a>
+                                <a href="/add_mailing_list" class="form-menu-item">
+                                    <i class="fas fa-envelope"></i>
+                                    Join Mailing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-button">
+                            <i class="fas fa-user-circle"></i>
+                            {{ session.get('user_name', 'User') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-menu-dropdown">
+                            <div class="user-menu-dropdown-content">
+                                <a href="/profile" class="user-menu-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    Profile Settings
+                                </a>
+                                <a href="/logout" class="user-menu-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
             </div>
         </div>
     </div>
 
     <div class="container main-content">
-        <div class="form-container">
+<div class="form-container">
             <h2 class="section-title">Collector Information Form</h2>
             <p class="section-subtitle">Register a new art collector in our gallery database. Please provide the collector's information below.</p>
 
-            {% if success %}
+  {% if success %}
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">✨ Collector Successfully Added!</h4>
                     <p class="mb-0">The collector has been successfully registered in our system.</p>
@@ -326,8 +535,8 @@
                     <a href="/add_collector" class="btn btn-primary me-md-2">Add Another Collector</a>
                     <a href="/" class="btn btn-secondary">Return to Home</a>
                 </div>
-            {% else %}
-                {% if error %}
+  {% else %}
+    {% if error %}
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-circle"></i>
                         <div>
@@ -335,7 +544,7 @@
                             <p class="mb-0">{{ error }}</p>
                         </div>
                     </div>
-                {% endif %}
+    {% endif %}
 
                 <form method="POST" class="needs-validation" novalidate>
                     <!-- Interview Information -->
@@ -447,8 +656,8 @@
                                 <label class="form-label required-field">
                                     <i class="fas fa-phone"></i> Number
                                 </label>
-                                <input type="text" class="form-control" name="phoneNumber" 
-                                       value="{{ request.form.phoneNumber }}"
+                                <input type="text" class="form-control" name="telephoneNumber" 
+                                       value="{{ request.form.telephoneNumber }}"
                                        maxlength="7"
                                        onkeypress="return /[0-9]/.test(event.key)"
                                        pattern="[0-9]{7}"
@@ -460,8 +669,8 @@
                                 <label class="form-label required-field">
                                     <i class="fas fa-id-card"></i> Social Security Number
                                 </label>
-                                <input type="text" class="form-control" name="ssn" 
-                                       value="{{ request.form.ssn }}"
+                                <input type="text" class="form-control" name="socialSecurityNumber" 
+                                       value="{{ request.form.socialSecurityNumber }}"
                                        maxlength="9"
                                        onkeypress="return /[0-9]/.test(event.key)"
                                        pattern="[0-9]{9}"
@@ -554,7 +763,7 @@
                                 <input type="text" class="form-control mt-2 d-none" id="otherStyle" name="otherStyle" placeholder="Please specify style">
                             </div>
                         </div>
-                    </div>
+      </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="/" class="btn btn-secondary">
@@ -564,9 +773,9 @@
                             <i class="fas fa-check-circle"></i> Submit
                         </button>
                     </div>
-                </form>
-            {% endif %}
-        </div>
+    </form>
+  {% endif %}
+</div>
     </div>
 
     <!-- Font Awesome -->
@@ -613,27 +822,6 @@
                 }
             });
 
-            // Handle interviewer name validation
-            const interviewerInput = document.querySelector('input[name="interviewerName"]');
-            interviewerInput.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
-                if (cleanText) {
-                    document.execCommand('insertText', false, cleanText);
-                }
-            });
-
-            interviewerInput.addEventListener('input', function() {
-                if (this.value.match(/^[a-zA-Z\s-']{1,30}$/)) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-
             // Handle name fields paste events (including artist names)
             const nameInputs = document.querySelectorAll('input[name="firstName"], input[name="lastName"], input[name="artistFirstName"], input[name="artistLastName"]');
             nameInputs.forEach(input => {
@@ -645,22 +833,9 @@
                         document.execCommand('insertText', false, cleanText);
                     }
                 });
-
-                // Add input validation for artist name fields
-                if (input.name.startsWith('artist')) {
-                    input.addEventListener('input', function() {
-                        if (this.value.match(/^[a-zA-Z\s-']{0,15}$/)) {
-                            this.classList.remove('is-invalid');
-                            this.classList.add('is-valid');
-                        } else {
-                            this.classList.remove('is-valid');
-                            this.classList.add('is-invalid');
-                        }
-                    });
-                }
             });
 
-            // Function to handle numeric field validation
+            // Handle numeric fields validation
             function setupNumericValidation(inputElement, requiredLength) {
                 inputElement.addEventListener('paste', function(e) {
                     e.preventDefault();
@@ -684,9 +859,9 @@
 
             // Setup validation for numeric fields
             setupNumericValidation(document.querySelector('input[name="areaCode"]'), 3);
-            setupNumericValidation(document.querySelector('input[name="phoneNumber"]'), 7);
+            setupNumericValidation(document.querySelector('input[name="telephoneNumber"]'), 7);
             setupNumericValidation(document.querySelector('input[name="zip"]'), 5);
-            setupNumericValidation(document.querySelector('input[name="ssn"]'), 9);
+            setupNumericValidation(document.querySelector('input[name="socialSecurityNumber"]'), 9);
 
             // Handle state field validation
             const stateInput = document.querySelector('input[name="state"]');
@@ -698,6 +873,24 @@
                     this.classList.remove('is-valid');
                     this.classList.add('is-invalid');
                 }
+            });
+        });
+
+        // Remove any click-based JavaScript for user menu
+        document.addEventListener('DOMContentLoaded', function() {
+            function toggleFormsMenu(button) {
+                const menu = button.closest('.forms-menu');
+                menu.classList.toggle('active');
+            }
+
+            // Close the forms menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const formsMenus = document.querySelectorAll('.forms-menu');
+                formsMenus.forEach(menu => {
+                    if (!menu.contains(event.target)) {
+                        menu.classList.remove('active');
+                    }
+                });
             });
         });
     </script>

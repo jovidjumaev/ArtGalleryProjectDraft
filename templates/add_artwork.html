@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Artwork - Furman Art Gallery</title>
     <!-- Modern CSS Reset -->
@@ -10,12 +10,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
-    <style>
+  <style>
         :root {
             --primary-color: #1a1a1a;
             --accent-color: #C7A464;
-            --bg-color: #f9f9f9;
+            --bg-color: #f0ebe1;
             --text-color: #2c2c2c;
             --header-height: 80px;
             --border-radius: 16px;
@@ -28,6 +30,19 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(199, 164, 100, 0.05), rgba(199, 164, 100, 0.02));
+            pointer-events: none;
+            z-index: 0;
         }
 
         .header {
@@ -60,11 +75,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-link:hover, .nav-link.active {
             color: white !important;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
         }
 
         .nav-link i {
@@ -75,18 +91,21 @@
             margin-top: calc(var(--header-height) + 40px);
             margin-bottom: 50px;
             position: relative;
+            z-index: 1;
         }
 
         .form-container {
             background-color: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             padding: 50px;
             position: relative;
             transition: var(--transition);
             border: 1px solid rgba(0,0,0,0.05);
             max-width: 1000px;
             margin: 0 auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .form-content {
@@ -351,7 +370,214 @@
             pointer-events: none;
             color: var(--accent-color);
         }
-    </style>
+
+        .form-control.is-valid, .form-select.is-valid {
+            border-color: #198754;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #dc3545;
+            padding-right: calc(1.5em + 0.75rem);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right calc(0.375em + 0.1875rem) center;
+            background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .form-select.is-valid, .form-select.is-invalid {
+            background-position: right 0.75rem center, center right 2.25rem;
+            background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+        }
+
+        .form-select.is-valid {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        }
+
+        .form-select.is-invalid {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        }
+
+        .owner-required-field::after {
+            content: "*";
+            color: var(--accent-color);
+            margin-left: 4px;
+            display: none;
+        }
+        
+        .owner-required-field.required::after {
+            display: inline;
+        }
+
+        .user-menu {
+            position: relative;
+            margin-left: 1rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .user-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-button:hover {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .user-menu:hover .user-menu-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .user-menu-item:first-child {
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .user-menu-item:last-child {
+            border-bottom-left-radius: var(--border-radius);
+            border-bottom-right-radius: var(--border-radius);
+        }
+
+        .user-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .user-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .forms-menu {
+            position: relative;
+            margin-left: 0.5rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .forms-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .forms-button:hover, .forms-menu.active .forms-button {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .forms-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 220px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .forms-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .forms-menu:hover .forms-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .form-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .form-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .form-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+  </style>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -359,65 +585,100 @@
         <div class="container h-100">
             <div class="d-flex justify-content-between align-items-center header-content">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-palette me-2"></i>
-                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    <a href="/" style="color: white; text-decoration: none;" class="d-flex align-items-center">
+                        <i class="fas fa-palette me-2"></i>
+                        <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    </a>
                 </div>
-                <nav class="d-flex gap-2">
+                <nav class="d-flex gap-2 align-items-center">
                     <a href="/" class="nav-link">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="/add_artwork" class="nav-link active">
-                        <i class="fas fa-image"></i> Add Artwork
-                    </a>
-                    <a href="/add_artist" class="nav-link">
-                        <i class="fas fa-palette"></i> Add Artist
-                    </a>
-                    <a href="/add_sale" class="nav-link">
-                        <i class="fas fa-receipt"></i> Add Sale
-                    </a>
-                    <a href="/add_collector" class="nav-link">
-                        <i class="fas fa-star"></i> Add Collector
-                    </a>
-                    <a href="/add_mailing_list" class="nav-link">
-                        <i class="fas fa-envelope"></i> Join Mailing
-                    </a>
+                    <div class="forms-menu">
+                        <button class="forms-button" onclick="toggleFormsMenu(this)">
+                            <i class="fas fa-list-alt"></i>
+                            Available Forms
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="forms-dropdown">
+                            <div class="forms-dropdown-content">
+                                <a href="/add_artwork" class="form-menu-item active">
+                                    <i class="fas fa-image"></i>
+                                    Add Artwork
+                                </a>
+                                <a href="/add_artist" class="form-menu-item">
+                                    <i class="fas fa-palette"></i>
+                                    Add Artist
+                                </a>
+                                <a href="/add_sale" class="form-menu-item">
+                                    <i class="fas fa-receipt"></i>
+                                    Add Sale
+                                </a>
+                                <a href="/add_collector" class="form-menu-item">
+                                    <i class="fas fa-star"></i>
+                                    Add Collector
+                                </a>
+                                <a href="/add_mailing_list" class="form-menu-item">
+                                    <i class="fas fa-envelope"></i>
+                                    Join Mailing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-button">
+                            <i class="fas fa-user-circle"></i>
+                            {{ session.get('user_name', 'User') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-menu-dropdown">
+                            <a href="/profile" class="user-menu-item">
+                                <i class="fas fa-user-cog"></i>
+                                Profile Settings
+                            </a>
+                            <a href="/logout" class="user-menu-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
                 </nav>
             </div>
         </div>
     </div>
 
     <div class="container main-content">
-        <div class="form-container">
+<div class="form-container">
             <div class="form-content">
                 <div class="form-container-header">
                     <h2 class="section-title">Add New Artwork</h2>
                     <p class="section-subtitle">Register a new piece of art in our gallery collection. Please provide detailed information about the artwork.</p>
                 </div>
 
-                {% if success %}
-                    <div class="success-animation">
-                        <i class="fas fa-check-circle"></i>
-                        <h4>Artwork Successfully Added!</h4>
-                        <p>The artwork has been successfully registered in our gallery database.</p>
-                        <div class="btn-group">
-                            <a href="/add_artwork" class="btn btn-primary">
-                                <i class="fas fa-plus-circle"></i> Add Another Artwork
-                            </a>
-                            <a href="/" class="btn btn-secondary">
-                                <i class="fas fa-home"></i> Return to Home
-                            </a>
+  {% if success %}
+                <div class="success-animation">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Artwork Successfully Added!</h4>
+                    <p>The artwork has been successfully registered in our gallery database.</p>
+                    <div class="btn-group">
+                        <a href="/add_artwork" class="btn btn-primary">
+                            <i class="fas fa-plus-circle"></i> Add Another Artwork
+                        </a>
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-home"></i> Return to Home
+                        </a>
+                    </div>
+                </div>
+  {% else %}
+    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <strong>Error!</strong>
+                            <p class="mb-0">{{ error }}</p>
                         </div>
                     </div>
-                {% else %}
-                    {% if error %}
-                        <div class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <div>
-                                <strong>Error!</strong>
-                                <p class="mb-0">{{ error }}</p>
-                            </div>
-                        </div>
-                    {% endif %}
+    {% endif %}
 
                     <form method="POST" class="needs-validation" novalidate>
                         <!-- Artwork Details -->
@@ -485,7 +746,7 @@
                                         <i class="fas fa-shapes"></i> Type
                                     </label>
                                     <div class="select-wrapper">
-                                        <select class="form-select" name="type" id="type" required>
+                                        <select class="form-select" name="usualType" id="type" required>
                                             <option value="" selected disabled>Select Type</option>
                                             <option value="Painting" {% if request.form.type == 'Painting' %}selected{% endif %}>Painting</option>
                                             <option value="Sculpture" {% if request.form.type == 'Sculpture' %}selected{% endif %}>Sculpture</option>
@@ -503,7 +764,7 @@
                                         <i class="fas fa-paint-brush"></i> Medium
                                     </label>
                                     <div class="select-wrapper">
-                                        <select class="form-select" name="medium" id="medium" required>
+                                        <select class="form-select" name="usualMedium" id="medium" required>
                                             <option value="" selected disabled>Select Medium</option>
                                             <option value="Oil" {% if request.form.medium == 'Oil' %}selected{% endif %}>Oil</option>
                                             <option value="Acrylic" {% if request.form.medium == 'Acrylic' %}selected{% endif %}>Acrylic</option>
@@ -521,7 +782,7 @@
                                         <i class="fas fa-brush"></i> Style
                                     </label>
                                     <div class="select-wrapper">
-                                        <select class="form-select" name="style" id="style" required>
+                                        <select class="form-select" name="usualStyle" id="style" required>
                                             <option value="" selected disabled>Select Style</option>
                                             <option value="Abstract" {% if request.form.style == 'Abstract' %}selected{% endif %}>Abstract</option>
                                             <option value="Realism" {% if request.form.style == 'Realism' %}selected{% endif %}>Realism</option>
@@ -633,17 +894,18 @@
                                     <div class="invalid-feedback">Please enter exactly 7 digits</div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">
+                                    <label class="form-label owner-required-field">
                                         <i class="fas fa-id-card"></i> Owner Social Security Number
                                     </label>
-                                    <input type="text" class="form-control" name="ownerSSN" 
+                                    <input type="text" class="form-control owner-field" name="ownerSSN" 
                                            value="{{ request.form.ownerSSN }}"
                                            maxlength="9"
                                            onkeypress="return /[0-9]/.test(event.key)"
                                            pattern="[0-9]{9}"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                    <div class="form-text">9 digits only (e.g., 123456789)</div>
-                                    <div class="invalid-feedback">Please enter exactly 9 digits</div>
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                           data-owner-required="true">
+                                    <div class="invalid-feedback">Please enter exactly 9 digits for SSN</div>
+                                    <div class="form-text">9 digits only (e.g., 123456789) - Required if any owner information is provided</div>
                                 </div>
                             </div>
                         </div>
@@ -651,19 +913,46 @@
                         <!-- Gallery Information -->
                         <div class="form-section">
                             <h5><i class="fas fa-store"></i> Gallery Information</h5>
-                            <p class="text-muted mb-4">If the piece is chosen to be offered by the gallery, please complete this section:</p>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">
+                                    <label class="form-label required-field">
                                         <i class="fas fa-calendar"></i> Date Listed
                                     </label>
-                                    <input type="date" class="form-control" name="dateListed" value="{{ request.form.dateListed }}">
+                                    <input type="date" class="form-control gallery-field" name="dateListed" 
+                                           value="{{ request.form.dateListed }}" 
+                                           data-required="true"
+                                           required>
+                                    <div class="invalid-feedback">Please select a date</div>
+                                    <div class="form-text">Required field</div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">
+                                    <label class="form-label required-field">
                                         <i class="fas fa-dollar-sign"></i> Asking Price
                                     </label>
-                                    <input type="number" class="form-control" name="askingPrice" value="{{ request.form.askingPrice }}" min="0" step="0.01">
+                                    <input type="number" class="form-control gallery-field" name="askingPrice" 
+                                           value="{{ request.form.askingPrice }}" 
+                                           min="0" 
+                                           step="0.01" 
+                                           data-required="true"
+                                           required>
+                                    <div class="invalid-feedback">Please enter a valid price</div>
+                                    <div class="form-text">Required field</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-tag"></i> Status
+                                    </label>
+                                    <div class="select-wrapper">
+                                        <select class="form-select gallery-field" name="status" data-required="true" required>
+                                            <option value="" disabled>Select Status</option>
+                                            <option value="for sale" selected>For Sale</option>
+                                            <option value="sold">Sold</option>
+                                            <option value="returned">Returned</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <div class="invalid-feedback">Please select a status</div>
+                                    <div class="form-text">Required field</div>
                                 </div>
                             </div>
                         </div>
@@ -676,14 +965,12 @@
                                 <i class="fas fa-check-circle"></i> Submit Artwork
                             </button>
                         </div>
-                    </form>
-                {% endif %}
-            </div>
+    </form>
+  {% endif %}
+</div>
         </div>
     </div>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -706,13 +993,40 @@
 
         // Handle "Other" options
         document.addEventListener('DOMContentLoaded', function() {
-            const fields = ['type', 'medium', 'style'];
+            // Update selected values from form data
+            const typeSelect = document.getElementById('type');
+            const mediumSelect = document.getElementById('medium');
+            const styleSelect = document.getElementById('style');
+            
+            // Set initial values if they exist in the form data
+            if ("{{ request.form.usualType }}") {
+                typeSelect.value = "{{ request.form.usualType }}";
+            }
+            if ("{{ request.form.usualMedium }}") {
+                mediumSelect.value = "{{ request.form.usualMedium }}";
+            }
+            if ("{{ request.form.usualStyle }}") {
+                styleSelect.value = "{{ request.form.usualStyle }}";
+            }
+
+            // Handle "Other" options
+            const fields = [
+                { select: 'type', other: 'otherType' },
+                { select: 'medium', other: 'otherMedium' },
+                { select: 'style', other: 'otherStyle' }
+            ];
             
             fields.forEach(field => {
-                const select = document.getElementById(field);
-                const otherInput = document.getElementById(`other${field.charAt(0).toUpperCase() + field.slice(1)}`);
+                const select = document.getElementById(field.select);
+                const otherInput = document.getElementById(field.other);
                 
                 if (select && otherInput) {
+                    // Check initial state
+                    if (select.value === 'other') {
+                        otherInput.classList.remove('d-none');
+                        otherInput.required = true;
+                    }
+
                     select.addEventListener('change', function() {
                         if (this.value === 'other') {
                             otherInput.classList.remove('d-none');
@@ -723,6 +1037,35 @@
                             otherInput.value = '';
                         }
                     });
+                }
+            });
+
+            // Add form submission handler to validate dropdowns
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const typeValue = typeSelect.value;
+                const mediumValue = mediumSelect.value;
+                const styleValue = styleSelect.value;
+
+                if (!typeValue || typeValue === '') {
+                    typeSelect.setCustomValidity('Please select a type');
+                    event.preventDefault();
+                } else {
+                    typeSelect.setCustomValidity('');
+                }
+
+                if (!mediumValue || mediumValue === '') {
+                    mediumSelect.setCustomValidity('Please select a medium');
+                    event.preventDefault();
+                } else {
+                    mediumSelect.setCustomValidity('');
+                }
+
+                if (!styleValue || styleValue === '') {
+                    styleSelect.setCustomValidity('Please select a style');
+                    event.preventDefault();
+                } else {
+                    styleSelect.setCustomValidity('');
                 }
             });
         });
@@ -835,6 +1178,216 @@
             setupNumericValidation(document.querySelector('input[name="ownerAreaCode"]'), 3);
             setupNumericValidation(document.querySelector('input[name="ownerPhoneNumber"]'), 7);
             setupNumericValidation(document.querySelector('input[name="ownerSSN"]'), 9);
+        });
+
+        // Add this to your existing JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryInputs = document.querySelectorAll('.gallery-field');
+            const form = document.querySelector('form');
+
+            function validateGalleryFields() {
+                let isValid = true;
+                galleryInputs.forEach(input => {
+                    if (input.dataset.required === 'true' && !input.value) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+                return isValid;
+            }
+
+            // Add form validation
+            form.addEventListener('submit', function(event) {
+                if (!validateGalleryFields()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+        });
+
+        // Add owner information validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const ownerFields = document.querySelectorAll('.owner-field');
+            const ownerRequiredLabels = document.querySelectorAll('.owner-required-field');
+            
+            function checkOwnerFields() {
+                // Check if any owner field has a value
+                let hasOwnerInfo = false;
+                ownerFields.forEach(field => {
+                    if (field.value.trim() !== '') {
+                        hasOwnerInfo = true;
+                    }
+                });
+
+                // Make all owner fields required if any has value
+                ownerFields.forEach(field => {
+                    if (hasOwnerInfo) {
+                        field.setAttribute('required', '');
+                        field.dataset.ownerRequired = 'true';
+                    } else {
+                        field.removeAttribute('required');
+                        field.dataset.ownerRequired = 'false';
+                    }
+                });
+
+                // Show/hide required asterisk
+                ownerRequiredLabels.forEach(label => {
+                    if (hasOwnerInfo) {
+                        label.classList.add('required');
+                    } else {
+                        label.classList.remove('required');
+                    }
+                });
+            }
+
+            // Add event listeners to all owner fields
+            ownerFields.forEach(field => {
+                field.addEventListener('input', checkOwnerFields);
+                field.addEventListener('change', checkOwnerFields);
+            });
+
+            // Check on form submission
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(event) {
+                const hasOwnerInfo = Array.from(ownerFields).some(field => field.value.trim() !== '');
+                
+                if (hasOwnerInfo) {
+                    const ssnField = document.querySelector('input[name="ownerSSN"]');
+                    if (!ssnField.value || !ssnField.value.match(/^[0-9]{9}$/)) {
+                        event.preventDefault();
+                        ssnField.classList.add('is-invalid');
+                        ssnField.focus();
+                    }
+                }
+            });
+
+            // Initial check on page load
+            checkOwnerFields();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const allInputs = form.querySelectorAll('input, select');
+
+            // Remove all validation classes on page load
+            function clearValidation() {
+                allInputs.forEach(input => {
+                    input.classList.remove('is-valid', 'is-invalid');
+                });
+            }
+            
+            clearValidation();
+
+            // Function to validate a single field
+            function validateField(input) {
+                // Always start by removing existing validation classes
+                input.classList.remove('is-valid', 'is-invalid');
+
+                // Don't show any validation state if the field is empty
+                if (!input.value) {
+                    return false;
+                }
+
+                // Specific validation for different field types
+                if (input.type === 'date') {
+                    // Only show valid state if a date is actually selected
+                    if (input.value) {
+                        input.classList.add('is-valid');
+                        return true;
+                    }
+                    return false;
+                }
+
+                if (input.type === 'number') {
+                    const value = parseFloat(input.value);
+                    if (!isNaN(value) && value > 0) {
+                        input.classList.add('is-valid');
+                        return true;
+                    }
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                if (input.tagName === 'SELECT') {
+                    if (input.value && input.value !== 'Select Style') {
+                        input.classList.add('is-valid');
+                        return true;
+                    }
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                // For all other input types, if we get here and have a value, it's valid
+                if (input.value) {
+                    input.classList.add('is-valid');
+                    return true;
+                }
+
+                return false;
+            }
+
+            // Add input event listeners for real-time validation
+            allInputs.forEach(input => {
+                ['input', 'change', 'blur'].forEach(eventType => {
+                    input.addEventListener(eventType, function() {
+                        validateField(this);
+                    });
+                });
+            });
+
+            // Handle form submission
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+                
+                allInputs.forEach(input => {
+                    // For required fields, show invalid state if empty on submit
+                    if ((input.hasAttribute('required') || input.dataset.required === 'true') && !input.value) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    } else if (!validateField(input)) {
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+        });
+
+        function toggleFormsMenu(button) {
+            const menu = button.closest('.forms-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close the forms menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const formsMenus = document.querySelectorAll('.forms-menu');
+            formsMenus.forEach(menu => {
+                if (!menu.contains(event.target)) {
+                    menu.classList.remove('active');
+                }
+            });
+        });
+
+        // Add this to handle the user menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const userMenu = document.querySelector('.user-menu');
+            const userButton = userMenu.querySelector('.user-button');
+
+            userButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userMenu.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!userMenu.contains(e.target)) {
+                    userMenu.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>

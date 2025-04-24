@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Sale - Furman Art Gallery</title>
     <!-- Modern CSS Reset -->
@@ -11,11 +11,11 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <style>
+  <style>
         :root {
             --primary-color: #1a1a1a;
             --accent-color: #C7A464;
-            --bg-color: #f9f9f9;
+            --bg-color: #f0ebe1;
             --text-color: #2c2c2c;
             --header-height: 80px;
             --border-radius: 16px;
@@ -28,6 +28,19 @@
             font-family: 'Outfit', sans-serif;
             line-height: 1.7;
             min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(199, 164, 100, 0.05), rgba(199, 164, 100, 0.02));
+            pointer-events: none;
+            z-index: 0;
         }
 
         .header {
@@ -60,11 +73,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            background: rgba(255,255,255,0.1);
         }
 
         .nav-link:hover, .nav-link.active {
             color: white !important;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.2);
         }
 
         .nav-link i {
@@ -75,18 +89,21 @@
             margin-top: calc(var(--header-height) + 40px);
             margin-bottom: 50px;
             position: relative;
+            z-index: 1;
         }
 
         .form-container {
             background-color: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             padding: 50px;
             position: relative;
             transition: var(--transition);
             border: 1px solid rgba(0,0,0,0.05);
             max-width: 1000px;
             margin: 0 auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .section-title {
@@ -277,7 +294,156 @@
             color: #d63031;
             border-left: 4px solid #ff7675;
         }
-    </style>
+
+        .user-menu {
+            position: relative;
+            margin-left: 1rem;
+            padding-bottom: 20px;
+            margin-bottom: -20px;
+        }
+
+        .user-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .user-button:hover {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .user-menu-dropdown {
+            position: absolute;
+            top: calc(100% - 15px);
+            right: -10px;
+            left: -10px;
+            padding: 15px 10px 10px 10px;
+            background: transparent;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .user-menu-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .user-menu:hover .user-menu-dropdown {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .user-menu-item:hover {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        .user-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+
+        .forms-menu {
+            position: relative;
+            margin-left: 0.5rem;
+        }
+
+        .forms-button {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8) !important;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .forms-button:hover, .forms-menu.active .forms-button {
+            background: rgba(255,255,255,0.2);
+            color: white !important;
+        }
+
+        .forms-dropdown {
+            position: absolute;
+            top: calc(100% - 5px);
+            right: 0;
+            padding-top: 10px;
+            background: transparent;
+            min-width: 220px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .forms-dropdown-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .forms-menu:hover .forms-dropdown,
+        .forms-menu.active .forms-dropdown {
+            display: block;
+        }
+
+        .form-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .form-menu-item:hover {
+            background: rgba(0,0,0,0.05);
+            color: var(--accent-color);
+        }
+
+        .form-menu-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+  </style>
 </head>
 <body>
     <!-- Navigation Header -->
@@ -285,39 +451,76 @@
         <div class="container h-100">
             <div class="d-flex justify-content-between align-items-center header-content">
                 <div class="d-flex align-items-center">
-                    <i class="fas fa-palette me-2"></i>
-                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    <a href="/" style="color: white; text-decoration: none;" class="d-flex align-items-center">
+                        <i class="fas fa-palette me-2"></i>
+                        <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                    </a>
                 </div>
-                <nav class="d-flex gap-2">
+                <nav class="d-flex gap-2 align-items-center">
                     <a href="/" class="nav-link">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="/add_artwork" class="nav-link">
-                        <i class="fas fa-image"></i> Add Artwork
-                    </a>
-                    <a href="/add_artist" class="nav-link">
-                        <i class="fas fa-palette"></i> Add Artist
-                    </a>
-                    <a href="/add_sale" class="nav-link active">
-                        <i class="fas fa-receipt"></i> Add Sale
-                    </a>
-                    <a href="/add_collector" class="nav-link">
-                        <i class="fas fa-star"></i> Add Collector
-                    </a>
-                    <a href="/add_mailing_list" class="nav-link">
-                        <i class="fas fa-envelope"></i> Join Mailing
-                    </a>
+                    <div class="forms-menu">
+                        <button class="forms-button" onclick="toggleFormsMenu(this)">
+                            <i class="fas fa-list-alt"></i>
+                            Available Forms
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="forms-dropdown">
+                            <div class="forms-dropdown-content">
+                                <a href="/add_artwork" class="form-menu-item">
+                                    <i class="fas fa-image"></i>
+                                    Add Artwork
+                                </a>
+                                <a href="/add_artist" class="form-menu-item">
+                                    <i class="fas fa-palette"></i>
+                                    Add Artist
+                                </a>
+                                <a href="/add_sale" class="form-menu-item active">
+                                    <i class="fas fa-receipt"></i>
+                                    Add Sale
+                                </a>
+                                <a href="/add_collector" class="form-menu-item">
+                                    <i class="fas fa-star"></i>
+                                    Add Collector
+                                </a>
+                                <a href="/add_mailing_list" class="form-menu-item">
+                                    <i class="fas fa-envelope"></i>
+                                    Join Mailing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-button">
+                            <i class="fas fa-user-circle"></i>
+                            {{ session.get('user_name', 'User') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="user-menu-dropdown">
+                            <div class="user-menu-dropdown-content">
+                                <a href="/profile" class="user-menu-item">
+                                    <i class="fas fa-user-cog"></i>
+                                    Profile Settings
+                                </a>
+                                <a href="/logout" class="user-menu-item">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </nav>
             </div>
         </div>
     </div>
 
     <div class="container main-content">
-        <div class="form-container">
+<div class="form-container">
             <h2 class="section-title">Record New Sale</h2>
             <p class="section-subtitle">Document a new artwork sale in our gallery system.</p>
 
-            {% if success %}
+  {% if success %}
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">✨ Sale Successfully Recorded!</h4>
                     <p class="mb-0">The sale has been successfully recorded in our system.</p>
@@ -326,8 +529,8 @@
                     <a href="/add_sale" class="btn btn-primary me-md-2">Record Another Sale</a>
                     <a href="/" class="btn btn-secondary">Return to Home</a>
                 </div>
-            {% else %}
-                {% if error %}
+  {% else %}
+    {% if error %}
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-circle"></i>
                         <div>
@@ -335,7 +538,7 @@
                             <p class="mb-0">{{ error }}</p>
                         </div>
                     </div>
-                {% endif %}
+    {% endif %}
 
                 <form method="POST" class="needs-validation" novalidate>
                     <!-- Artwork Information -->
@@ -478,97 +681,69 @@
                     </div>
 
                     <!-- Buyer Information -->
-                    <div class="form-section">
-                        <h5><i class="fas fa-user"></i> Buyer Information</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-user"></i> Buyer Last Name
-                                </label>
-                                <input type="text" class="form-control" name="buyerLastName" 
-                                       value="{{ request.form.buyerLastName }}"
-                                       maxlength="15"
-                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
-                                       required>
-                                <div class="form-text">Maximum 15 characters, letters only</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-user"></i> Buyer First Name
-                                </label>
-                                <input type="text" class="form-control" name="buyerFirstName" 
-                                       value="{{ request.form.buyerFirstName }}"
-                                       maxlength="15"
-                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
-                                       required>
-                                <div class="form-text">Maximum 15 characters, letters only</div>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-map-marker-alt"></i> Street
-                                </label>
-                                <input type="text" class="form-control" name="buyerStreet" value="{{ request.form.buyerStreet }}" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-city"></i> City
-                                </label>
-                                <input type="text" class="form-control" name="buyerCity" value="{{ request.form.buyerCity }}" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-flag-usa"></i> State
-                                </label>
-                                <input type="text" class="form-control" name="buyerState" 
-                                       value="{{ request.form.buyerState }}"
-                                       maxlength="2"
-                                       onkeypress="return /[A-Za-z]/.test(event.key)"
-                                       pattern="[A-Z]{2}"
-                                       style="text-transform: uppercase;"
-                                       oninput="this.value = this.value.toUpperCase()"
-                                       required>
-                                <div class="form-text">2 capital letters only (e.g., SC)</div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-map-pin"></i> ZIP
-                                </label>
-                                <input type="text" class="form-control" name="buyerZip" 
-                                       value="{{ request.form.buyerZip }}"
-                                       maxlength="5"
-                                       onkeypress="return /[0-9]/.test(event.key)"
-                                       pattern="[0-9]{5}"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
-                                <div class="form-text">5 digits only (e.g., 12345)</div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-phone"></i> Area Code
-                                </label>
-                                <input type="text" class="form-control" name="buyerAreaCode" 
-                                       value="{{ request.form.buyerAreaCode }}"
-                                       maxlength="3"
-                                       onkeypress="return /[0-9]/.test(event.key)"
-                                       pattern="[0-9]{3}"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
-                                <div class="form-text">3 digits only (e.g., 864)</div>
-                            </div>
-                            <div class="col-md-8">
-                                <label class="form-label required-field">
-                                    <i class="fas fa-phone"></i> Number
-                                </label>
-                                <input type="text" class="form-control" name="buyerPhoneNumber" 
-                                       value="{{ request.form.buyerPhoneNumber }}"
-                                       maxlength="7"
-                                       onkeypress="return /[0-9]/.test(event.key)"
-                                       pattern="[0-9]{7}"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
-                                <div class="form-text">7 digits only (e.g., 5551234)</div>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5><i class="fas fa-user"></i> Collector (Buyer) Information</h5>
+                            <p class="text-muted small">If the collector is not found, you will be redirected to register them.</p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user"></i> Collector Last Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="buyerLastName"
+                                        value="{{ form_data.get('buyerLastName', '') }}"
+                                        maxlength="15" pattern="[A-Za-z]+" required>
+                                    <div class="form-text">Letters only, max 15 characters</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user"></i> Collector First Name
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="buyerFirstName"
+                                        value="{{ form_data.get('buyerFirstName', '') }}"
+                                        maxlength="15" pattern="[A-Za-z]+" required>
+                                    <div class="form-text">Letters only, max 15 characters</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Street Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buyerStreet" 
+                                        value="{{ form_data.get('buyerStreet', '') }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">City <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buyerCity" 
+                                        value="{{ form_data.get('buyerCity', '') }}" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">State <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buyerState"
+                                        value="{{ form_data.get('buyerState', '') }}"
+                                        maxlength="2" pattern="[A-Z]{2}" required>
+                                    <div class="form-text">2 capital letters</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">ZIP Code <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buyerZip"
+                                        value="{{ form_data.get('buyerZip', '') }}"
+                                        maxlength="5" pattern="[0-9]{5}" required>
+                                    <div class="form-text">5 digits</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Area Code <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buyerAreaCode"
+                                        value="{{ form_data.get('buyerAreaCode', '') }}"
+                                        maxlength="3" pattern="[0-9]{3}" required>
+                                    <div class="form-text">3 digits</div>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buyerPhoneNumber"
+                                        value="{{ form_data.get('buyerPhoneNumber', '') }}"
+                                        maxlength="7" pattern="[0-9]{7}" required>
+                                    <div class="form-text">7 digits</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -579,22 +754,27 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label required-field">
-                                    <i class="fas fa-tag"></i> Price
+                                    <i class="fas fa-tag"></i> Sale Price
                                 </label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="price" value="{{ request.form.price }}" required>
+                                <input type="number" step="0.01" min="0" class="form-control" name="salePrice" 
+                                       value="{{ form_data.salePrice if form_data else '' }}" required>
+                                <div class="form-text">Enter sale price in USD</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required-field">
-                                    <i class="fas fa-dollar-sign"></i> Tax
+                                    <i class="fas fa-dollar-sign"></i> Sale Tax
                                 </label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="tax" value="{{ request.form.tax }}" required>
+                                <input type="number" step="0.01" min="0" class="form-control" name="saleTax" 
+                                       value="{{ form_data.saleTax if form_data else '' }}" required>
                                 <div class="form-text">Enter tax amount in USD</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required-field">
-                                    <i class="fas fa-money-bill-wave"></i> Total Paid
+                                    <i class="fas fa-money-bill-wave"></i> Amount Remitted To Owner
                                 </label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="totalPaid" value="{{ request.form.totalPaid }}" required>
+                                <input type="number" step="0.01" min="0" class="form-control" name="amountRemittedToOwner" 
+                                       value="{{ form_data.amountRemittedToOwner if form_data else '' }}" required>
+                                <div class="form-text">Amount to be paid to the owner</div>
                             </div>
                         </div>
                     </div>
@@ -603,25 +783,26 @@
                     <div class="form-section">
                         <h5><i class="fas fa-user-tie"></i> Salesperson Information</h5>
                         <div class="row g-3">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <label class="form-label required-field">
-                                    <i class="fas fa-signature"></i> Salesperson Signature
+                                    <i class="fas fa-id-card"></i> Salesperson SSN
                                 </label>
-                                <input type="text" class="form-control" name="salespersonSignature" 
-                                       value="{{ request.form.salespersonSignature }}"
-                                       maxlength="30"
-                                       onkeypress="return /[A-Za-z\s-']/.test(event.key)"
-                                       pattern="[A-Z\s-']*"
-                                       style="text-transform: uppercase;"
-                                       oninput="this.value = this.value.toUpperCase()"
+                                <input type="text" class="form-control" name="salespersonSSN" 
+                                       value="{{ form_data.salespersonSSN if form_data else '' }}"
+                                       maxlength="9"
+                                       onkeypress="return /[0-9]/.test(event.key)"
+                                       pattern="[0-9]{9}"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                        required>
-                                <div class="form-text">Maximum 30 characters, capital letters only</div>
+                                <div class="form-text">9 digits only (e.g., 123456789)</div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label class="form-label required-field">
-                                    <i class="fas fa-calendar"></i> Date
+                                    <i class="fas fa-calendar"></i> Sale Date
                                 </label>
-                                <input type="date" class="form-control" name="signatureDate" value="{{ request.form.signatureDate }}" required>
+                                <input type="date" class="form-control" name="saleDate" 
+                                       value="{{ form_data.saleDate if form_data else '' }}" required>
+                                <div class="form-text">Date of sale</div>
                             </div>
                         </div>
                     </div>
@@ -634,9 +815,9 @@
                             <i class="fas fa-check-circle"></i> Generate Invoice
                         </button>
                     </div>
-                </form>
-            {% endif %}
-        </div>
+    </form>
+  {% endif %}
+</div>
     </div>
 
     <!-- Font Awesome -->
@@ -763,6 +944,37 @@
                     this.classList.remove('is-valid');
                     this.classList.add('is-invalid');
                 }
+            });
+
+            // User menu toggle
+            const userMenu = document.querySelector('.user-menu');
+            const userButton = document.querySelector('.user-button');
+            
+            userButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userMenu.classList.toggle('active');
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userMenu.contains(e.target)) {
+                    userMenu.classList.remove('active');
+                }
+            });
+
+            function toggleFormsMenu(button) {
+                const menu = button.closest('.forms-menu');
+                menu.classList.toggle('active');
+            }
+
+            // Close the forms menu when clicking outside
+            document.addEventListener('click', function(event) {
+                const formsMenus = document.querySelectorAll('.forms-menu');
+                formsMenus.forEach(menu => {
+                    if (!menu.contains(event.target)) {
+                        menu.classList.remove('active');
+                    }
+                });
             });
         });
     </script>
