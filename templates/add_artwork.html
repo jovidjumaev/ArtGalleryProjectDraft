@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Artwork - Furman Art Gallery</title>
+    <!-- Modern CSS Reset -->
+    <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #C7A464;
+            --bg-color: #f9f9f9;
+            --text-color: #2c2c2c;
+            --header-height: 80px;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 0;
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            height: 100%;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link i {
+            font-size: 1rem;
+        }
+
+        .main-content {
+            margin-top: calc(var(--header-height) + 40px);
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            padding: 50px;
+            position: relative;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .form-content {
+            width: 100%;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            line-height: 1.2;
+            font-family: 'Cormorant', serif;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .form-section:hover::before {
+            opacity: 1;
+        }
+
+        .form-section h5 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Cormorant', serif;
+        }
+
+        .form-section h5 i {
+            color: var(--accent-color);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label i {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: #fff;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(199, 164, 100, 0.1);
+        }
+
+        .form-control:hover, .form-select:hover {
+            border-color: var(--accent-color);
+        }
+
+        .required-field::after {
+            content: "*";
+            color: var(--accent-color);
+            margin-left: 4px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            border: none;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: #B69355;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(199, 164, 100, 0.2);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+            color: var(--text-color);
+        }
+
+        .alert {
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border: none;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert i {
+            font-size: 2rem;
+            color: currentColor;
+        }
+
+        .alert-success {
+            background: #f1f8f5;
+            color: #1c7c4e;
+            border-left: 4px solid #25a567;
+        }
+
+        .alert-danger {
+            background: #fdf3f4;
+            color: #d63031;
+            border-left: 4px solid #ff7675;
+        }
+
+        .form-text {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-text i {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+        }
+
+        .other-input {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-animation i {
+            font-size: 5rem;
+            color: #25a567;
+            margin-bottom: 2rem;
+        }
+
+        .success-animation h4 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-family: 'Cormorant', serif;
+        }
+
+        .success-animation p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 30px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .form-section {
+                padding: 25px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .form-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none !important;
+            padding-right: 40px;
+        }
+
+        .form-select::-ms-expand {
+            display: none;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper .fa-chevron-down {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="header">
+        <div class="container h-100">
+            <div class="d-flex justify-content-between align-items-center header-content">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-palette me-2"></i>
+                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                </div>
+                <nav class="d-flex gap-2">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/add_artwork" class="nav-link active">
+                        <i class="fas fa-image"></i> Add Artwork
+                    </a>
+                    <a href="/add_artist" class="nav-link">
+                        <i class="fas fa-palette"></i> Add Artist
+                    </a>
+                    <a href="/add_sale" class="nav-link">
+                        <i class="fas fa-receipt"></i> Add Sale
+                    </a>
+                    <a href="/add_collector" class="nav-link">
+                        <i class="fas fa-star"></i> Add Collector
+                    </a>
+                    <a href="/add_mailing_list" class="nav-link">
+                        <i class="fas fa-envelope"></i> Join Mailing
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="container main-content">
+        <div class="form-container">
+            <div class="form-content">
+                <div class="form-container-header">
+                    <h2 class="section-title">Add New Artwork</h2>
+                    <p class="section-subtitle">Register a new piece of art in our gallery collection. Please provide detailed information about the artwork.</p>
+                </div>
+
+                {% if success %}
+                    <div class="success-animation">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>Artwork Successfully Added!</h4>
+                        <p>The artwork has been successfully registered in our gallery database.</p>
+                        <div class="btn-group">
+                            <a href="/add_artwork" class="btn btn-primary">
+                                <i class="fas fa-plus-circle"></i> Add Another Artwork
+                            </a>
+                            <a href="/" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Return to Home
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <div>
+                                <strong>Error!</strong>
+                                <p class="mb-0">{{ error }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        <!-- Artwork Details -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-image"></i> Artwork Details</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-user"></i> Artist Last Name
+                                    </label>
+                                    <input type="text" class="form-control" name="artistLastName" 
+                                           value="{{ request.form.artistLastName }}" 
+                                           maxlength="15"
+                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s-']*"
+                                           required>
+                                    <div class="form-text">Maximum 15 characters, letters only</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-user"></i> Artist First Name
+                                    </label>
+                                    <input type="text" class="form-control" name="artistFirstName" 
+                                           value="{{ request.form.artistFirstName }}" 
+                                           maxlength="15"
+                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s-']*"
+                                           required>
+                                    <div class="form-text">Maximum 15 characters, letters only</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-signature"></i> Title
+                                    </label>
+                                    <input type="text" class="form-control" name="title" 
+                                           value="{{ request.form.title }}" 
+                                           maxlength="50" 
+                                           required>
+                                    <div class="form-text">Maximum 50 characters</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-calendar"></i> Year Completed
+                                    </label>
+                                    <input type="number" class="form-control" name="yearCompleted" 
+                                           value="{{ request.form.yearCompleted }}" 
+                                           min="1500" max="2025"
+                                           oninput="validateYear(this)"
+                                           required>
+                                    <div class="invalid-feedback">Year must be between 1500 and 2025</div>
+                                    <div class="form-text">Enter a year between 1500 and 2025</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-ruler-combined"></i> Size
+                                    </label>
+                                    <input type="text" class="form-control" name="size" 
+                                           value="{{ request.form.size }}" 
+                                           placeholder="e.g., 24x36 inches or 61x91.5 cm"
+                                           required>
+                                    <div class="form-text">Format: width x height (units). Example: 24x36 inches, 61x91.5 cm</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-shapes"></i> Type
+                                    </label>
+                                    <div class="select-wrapper">
+                                        <select class="form-select" name="type" id="type" required>
+                                            <option value="" selected disabled>Select Type</option>
+                                            <option value="Painting" {% if request.form.type == 'Painting' %}selected{% endif %}>Painting</option>
+                                            <option value="Sculpture" {% if request.form.type == 'Sculpture' %}selected{% endif %}>Sculpture</option>
+                                            <option value="Photography" {% if request.form.type == 'Photography' %}selected{% endif %}>Photography</option>
+                                            <option value="Digital Art" {% if request.form.type == 'Digital Art' %}selected{% endif %}>Digital Art</option>
+                                            <option value="Mixed Media" {% if request.form.type == 'Mixed Media' %}selected{% endif %}>Mixed Media</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <input type="text" class="form-control mt-2 d-none" id="otherType" name="otherType" placeholder="Please specify type">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-paint-brush"></i> Medium
+                                    </label>
+                                    <div class="select-wrapper">
+                                        <select class="form-select" name="medium" id="medium" required>
+                                            <option value="" selected disabled>Select Medium</option>
+                                            <option value="Oil" {% if request.form.medium == 'Oil' %}selected{% endif %}>Oil</option>
+                                            <option value="Acrylic" {% if request.form.medium == 'Acrylic' %}selected{% endif %}>Acrylic</option>
+                                            <option value="Watercolor" {% if request.form.medium == 'Watercolor' %}selected{% endif %}>Watercolor</option>
+                                            <option value="Bronze" {% if request.form.medium == 'Bronze' %}selected{% endif %}>Bronze</option>
+                                            <option value="Marble" {% if request.form.medium == 'Marble' %}selected{% endif %}>Marble</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <input type="text" class="form-control mt-2 d-none" id="otherMedium" name="otherMedium" placeholder="Please specify medium">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-brush"></i> Style
+                                    </label>
+                                    <div class="select-wrapper">
+                                        <select class="form-select" name="style" id="style" required>
+                                            <option value="" selected disabled>Select Style</option>
+                                            <option value="Abstract" {% if request.form.style == 'Abstract' %}selected{% endif %}>Abstract</option>
+                                            <option value="Realism" {% if request.form.style == 'Realism' %}selected{% endif %}>Realism</option>
+                                            <option value="Impressionism" {% if request.form.style == 'Impressionism' %}selected{% endif %}>Impressionism</option>
+                                            <option value="Modern" {% if request.form.style == 'Modern' %}selected{% endif %}>Modern</option>
+                                            <option value="Contemporary" {% if request.form.style == 'Contemporary' %}selected{% endif %}>Contemporary</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                    <input type="text" class="form-control mt-2 d-none" id="otherStyle" name="otherStyle" placeholder="Please specify style">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Owner Information -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-user-tie"></i> Owner Information</h5>
+                            <p class="text-muted mb-4">If owned by someone other than the artist, please complete this section with the owner information:</p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user"></i> Owner Last Name
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerLastName" 
+                                           value="{{ request.form.ownerLastName }}"
+                                           maxlength="15"
+                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s-']*">
+                                    <div class="form-text">Maximum 15 characters, letters only</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-user"></i> Owner First Name
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerFirstName" 
+                                           value="{{ request.form.ownerFirstName }}"
+                                           maxlength="15"
+                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s-']*">
+                                    <div class="form-text">Maximum 15 characters, letters only</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">
+                                        <i class="fas fa-map-marker-alt"></i> Street
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerStreet" 
+                                           value="{{ request.form.ownerStreet }}"
+                                           maxlength="30">
+                                    <div class="form-text">Maximum 30 characters</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-city"></i> City
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerCity" value="{{ request.form.ownerCity }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-flag-usa"></i> State
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerState" 
+                                           value="{{ request.form.ownerState }}"
+                                           maxlength="2"
+                                           onkeypress="return /[A-Za-z]/.test(event.key)"
+                                           pattern="[A-Z]{2}"
+                                           style="text-transform: uppercase;"
+                                           oninput="this.value = this.value.toUpperCase()">
+                                    <div class="form-text">2 capital letters only (e.g., SC)</div>
+                                    <div class="invalid-feedback">Please enter exactly 2 capital letters</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-map-pin"></i> ZIP
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerZip" 
+                                           value="{{ request.form.ownerZip }}"
+                                           maxlength="5"
+                                           onkeypress="return /[0-9]/.test(event.key)"
+                                           pattern="[0-9]{5}"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="form-text">5 digits only (e.g., 12345)</div>
+                                    <div class="invalid-feedback">Please enter exactly 5 digits</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">
+                                        <i class="fas fa-phone"></i> Area Code
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerAreaCode" 
+                                           value="{{ request.form.ownerAreaCode }}"
+                                           maxlength="3"
+                                           onkeypress="return /[0-9]/.test(event.key)"
+                                           pattern="[0-9]{3}"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="form-text">3 digits only (e.g., 864)</div>
+                                    <div class="invalid-feedback">Please enter exactly 3 digits</div>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">
+                                        <i class="fas fa-phone"></i> Number
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerPhoneNumber" 
+                                           value="{{ request.form.ownerPhoneNumber }}"
+                                           maxlength="7"
+                                           onkeypress="return /[0-9]/.test(event.key)"
+                                           pattern="[0-9]{7}"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="form-text">7 digits only (e.g., 5551234)</div>
+                                    <div class="invalid-feedback">Please enter exactly 7 digits</div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">
+                                        <i class="fas fa-id-card"></i> Owner Social Security Number
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerSSN" 
+                                           value="{{ request.form.ownerSSN }}"
+                                           maxlength="9"
+                                           onkeypress="return /[0-9]/.test(event.key)"
+                                           pattern="[0-9]{9}"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    <div class="form-text">9 digits only (e.g., 123456789)</div>
+                                    <div class="invalid-feedback">Please enter exactly 9 digits</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gallery Information -->
+                        <div class="form-section">
+                            <h5><i class="fas fa-store"></i> Gallery Information</h5>
+                            <p class="text-muted mb-4">If the piece is chosen to be offered by the gallery, please complete this section:</p>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-calendar"></i> Date Listed
+                                    </label>
+                                    <input type="date" class="form-control" name="dateListed" value="{{ request.form.dateListed }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">
+                                        <i class="fas fa-dollar-sign"></i> Asking Price
+                                    </label>
+                                    <input type="number" class="form-control" name="askingPrice" value="{{ request.form.askingPrice }}" min="0" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Submit Artwork
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Form validation and other scripts -->
+    <script>
+        // Enable Bootstrap form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+        // Handle "Other" options
+        document.addEventListener('DOMContentLoaded', function() {
+            const fields = ['type', 'medium', 'style'];
+            
+            fields.forEach(field => {
+                const select = document.getElementById(field);
+                const otherInput = document.getElementById(`other${field.charAt(0).toUpperCase() + field.slice(1)}`);
+                
+                if (select && otherInput) {
+                    select.addEventListener('change', function() {
+                        if (this.value === 'other') {
+                            otherInput.classList.remove('d-none');
+                            otherInput.required = true;
+                        } else {
+                            otherInput.classList.add('d-none');
+                            otherInput.required = false;
+                            otherInput.value = '';
+                        }
+                    });
+                }
+            });
+        });
+
+        // Replace the year validation with this new function
+        function validateYear(input) {
+            const year = parseInt(input.value);
+            if (year < 1500 || year > 2025) {
+                input.setCustomValidity('Invalid year');
+                input.classList.add('is-invalid');
+            } else {
+                input.setCustomValidity('');
+                input.classList.remove('is-invalid');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const yearInput = document.querySelector('input[name="yearCompleted"]');
+            yearInput.addEventListener('input', function() {
+                validateYear(this);
+            });
+        });
+
+        // Update the paste event listener to include artist name fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInputs = document.querySelectorAll('input[name="artistFirstName"], input[name="artistLastName"], input[name="ownerFirstName"], input[name="ownerLastName"]');
+            nameInputs.forEach(input => {
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
+                    if (cleanText) {
+                        document.execCommand('insertText', false, cleanText);
+                    }
+                });
+            });
+        });
+
+        // Add state field validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const stateInput = document.querySelector('input[name="ownerState"]');
+            stateInput.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanText = text.replace(/[^A-Za-z]/g, '').substr(0, 2).toUpperCase();
+                if (cleanText) {
+                    document.execCommand('insertText', false, cleanText);
+                }
+            });
+
+            stateInput.addEventListener('input', function() {
+                if (this.value.length === 2 && this.value.match(/^[A-Z]{2}$/)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+
+        // Add ZIP code validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const zipInput = document.querySelector('input[name="ownerZip"]');
+            zipInput.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanText = text.replace(/[^0-9]/g, '').substr(0, 5);
+                if (cleanText) {
+                    document.execCommand('insertText', false, cleanText);
+                }
+            });
+
+            zipInput.addEventListener('input', function() {
+                if (this.value.length === 5 && this.value.match(/^[0-9]{5}$/)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+
+        // Add validation for numeric fields
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to handle numeric field validation
+            function setupNumericValidation(inputElement, requiredLength) {
+                inputElement.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanText = text.replace(/[^0-9]/g, '').substr(0, requiredLength);
+                    if (cleanText) {
+                        document.execCommand('insertText', false, cleanText);
+                    }
+                });
+
+                inputElement.addEventListener('input', function() {
+                    if (this.value.length === requiredLength && this.value.match(new RegExp(`^[0-9]{${requiredLength}}$`))) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
+
+            // Setup validation for each numeric field
+            setupNumericValidation(document.querySelector('input[name="ownerAreaCode"]'), 3);
+            setupNumericValidation(document.querySelector('input[name="ownerPhoneNumber"]'), 7);
+            setupNumericValidation(document.querySelector('input[name="ownerSSN"]'), 9);
+        });
+    </script>
+</body>
+</html>

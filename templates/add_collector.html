@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Collector - Furman Art Gallery</title>
+    <!-- Modern CSS Reset -->
+    <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #C7A464;
+            --bg-color: #f9f9f9;
+            --text-color: #2c2c2c;
+            --header-height: 80px;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 0;
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            height: 100%;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link i {
+            font-size: 1rem;
+        }
+
+        .main-content {
+            margin-top: calc(var(--header-height) + 40px);
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            padding: 50px;
+            position: relative;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            line-height: 1.2;
+            font-family: 'Cormorant', serif;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .form-section:hover::before {
+            opacity: 1;
+        }
+
+        .form-section h5 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Cormorant', serif;
+        }
+
+        .form-section h5 i {
+            color: var(--accent-color);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label i {
+            color: var(--accent-color);
+            font-size: 0.8rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: #fff;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(199, 164, 100, 0.1);
+        }
+
+        .form-control:hover, .form-select:hover {
+            border-color: var(--accent-color);
+        }
+
+        .required-field::after {
+            content: "*";
+            color: var(--accent-color);
+            margin-left: 4px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn i {
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            border: none;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: #B69355;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(199, 164, 100, 0.2);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
+            color: var(--text-color);
+        }
+
+        .form-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none !important;
+            padding-right: 40px;
+        }
+
+        .form-select::-ms-expand {
+            display: none;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper .fa-chevron-down {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--accent-color);
+        }
+
+        .alert {
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border: none;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .alert i {
+            font-size: 2rem;
+            color: currentColor;
+        }
+
+        .alert-success {
+            background: #f1f8f5;
+            color: #1c7c4e;
+            border-left: 4px solid #25a567;
+        }
+
+        .alert-danger {
+            background: #fdf3f4;
+            color: #d63031;
+            border-left: 4px solid #ff7675;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="header">
+        <div class="container h-100">
+            <div class="d-flex justify-content-between align-items-center header-content">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-palette me-2"></i>
+                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                </div>
+                <nav class="d-flex gap-2">
+                    <a href="/" class="nav-link">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/add_artwork" class="nav-link">
+                        <i class="fas fa-image"></i> Add Artwork
+                    </a>
+                    <a href="/add_artist" class="nav-link">
+                        <i class="fas fa-palette"></i> Add Artist
+                    </a>
+                    <a href="/add_sale" class="nav-link">
+                        <i class="fas fa-receipt"></i> Add Sale
+                    </a>
+                    <a href="/add_collector" class="nav-link active">
+                        <i class="fas fa-star"></i> Add Collector
+                    </a>
+                    <a href="/add_mailing_list" class="nav-link">
+                        <i class="fas fa-envelope"></i> Join Mailing
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <div class="container main-content">
+        <div class="form-container">
+            <h2 class="section-title">Collector Information Form</h2>
+            <p class="section-subtitle">Register a new art collector in our gallery database. Please provide the collector's information below.</p>
+
+            {% if success %}
+                <div class="alert alert-success text-center" role="alert">
+                    <h4 class="alert-heading">✨ Collector Successfully Added!</h4>
+                    <p class="mb-0">The collector has been successfully registered in our system.</p>
+                </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="/add_collector" class="btn btn-primary me-md-2">Add Another Collector</a>
+                    <a href="/" class="btn btn-secondary">Return to Home</a>
+                </div>
+            {% else %}
+                {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div>
+                            <strong>Error!</strong>
+                            <p class="mb-0">{{ error }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <form method="POST" class="needs-validation" novalidate>
+                    <!-- Interview Information -->
+                    <div class="form-section">
+                        <h5><i class="fas fa-calendar"></i> Interview Details</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-calendar-day"></i> Date of Interview
+                                </label>
+                                <input type="date" class="form-control" name="interviewDate" value="{{ request.form.interviewDate }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-user"></i> Name of Interviewer
+                                </label>
+                                <input type="text" class="form-control" name="interviewerName" 
+                                       value="{{ request.form.interviewerName }}"
+                                       maxlength="30"
+                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                       pattern="[a-zA-Z\s-']*"
+                                       required>
+                                <div class="form-text">Maximum 30 characters, letters only</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collector Information -->
+                    <div class="form-section">
+                        <h5><i class="fas fa-user-tie"></i> Personal Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-user"></i> Collector Last Name
+                                </label>
+                                <input type="text" class="form-control" name="lastName" 
+                                       value="{{ request.form.lastName }}"
+                                       maxlength="15"
+                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                       pattern="[a-zA-Z\s-']*"
+                                       required>
+                                <div class="form-text">Maximum 15 characters, letters only</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-user"></i> First Name
+                                </label>
+                                <input type="text" class="form-control" name="firstName" 
+                                       value="{{ request.form.firstName }}"
+                                       maxlength="15"
+                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                       pattern="[a-zA-Z\s-']*"
+                                       required>
+                                <div class="form-text">Maximum 15 characters, letters only</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-map-marker-alt"></i> Street
+                                </label>
+                                <input type="text" class="form-control" name="street" value="{{ request.form.street }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-city"></i> City
+                                </label>
+                                <input type="text" class="form-control" name="city" value="{{ request.form.city }}" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-flag-usa"></i> State
+                                </label>
+                                <input type="text" class="form-control" name="state" 
+                                       value="{{ request.form.state }}"
+                                       maxlength="2"
+                                       onkeypress="return /[A-Za-z]/.test(event.key)"
+                                       pattern="[A-Z]{2}"
+                                       style="text-transform: uppercase;"
+                                       oninput="this.value = this.value.toUpperCase()"
+                                       required>
+                                <div class="form-text">2 capital letters only (e.g., SC)</div>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-map-pin"></i> ZIP
+                                </label>
+                                <input type="text" class="form-control" name="zip" 
+                                       value="{{ request.form.zip }}"
+                                       maxlength="5"
+                                       onkeypress="return /[0-9]/.test(event.key)"
+                                       pattern="[0-9]{5}"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                       required>
+                                <div class="form-text">5 digits only (e.g., 12345)</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-phone"></i> Area Code
+                                </label>
+                                <input type="text" class="form-control" name="areaCode" 
+                                       value="{{ request.form.areaCode }}"
+                                       maxlength="3"
+                                       onkeypress="return /[0-9]/.test(event.key)"
+                                       pattern="[0-9]{3}"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                       required>
+                                <div class="form-text">3 digits only (e.g., 864)</div>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-phone"></i> Number
+                                </label>
+                                <input type="text" class="form-control" name="phoneNumber" 
+                                       value="{{ request.form.phoneNumber }}"
+                                       maxlength="7"
+                                       onkeypress="return /[0-9]/.test(event.key)"
+                                       pattern="[0-9]{7}"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                       required>
+                                <div class="form-text">7 digits only (e.g., 5551234)</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label required-field">
+                                    <i class="fas fa-id-card"></i> Social Security Number
+                                </label>
+                                <input type="text" class="form-control" name="ssn" 
+                                       value="{{ request.form.ssn }}"
+                                       maxlength="9"
+                                       onkeypress="return /[0-9]/.test(event.key)"
+                                       pattern="[0-9]{9}"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                       required>
+                                <div class="form-text">9 digits only (e.g., 123456789)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Collection Information -->
+                    <div class="form-section">
+                        <h5><i class="fas fa-palette"></i> Collection Details</h5>
+                        <p class="text-muted mb-4">If the collection is predominantly by one artist, or has a distinguishing type, medium, or style, fill in this section:</p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-user-circle"></i> Artist Last Name
+                                </label>
+                                <input type="text" class="form-control" name="artistLastName" 
+                                       value="{{ request.form.artistLastName }}"
+                                       maxlength="15"
+                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                       pattern="[a-zA-Z\s-']*">
+                                <div class="form-text">Maximum 15 characters, letters only</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="fas fa-user-circle"></i> Artist First Name
+                                </label>
+                                <input type="text" class="form-control" name="artistFirstName" 
+                                       value="{{ request.form.artistFirstName }}"
+                                       maxlength="15"
+                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
+                                       pattern="[a-zA-Z\s-']*">
+                                <div class="form-text">Maximum 15 characters, letters only</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="fas fa-shapes"></i> Collection Type
+                                </label>
+                                <div class="select-wrapper">
+                                    <select class="form-select" name="collectionType" id="collectionType">
+                                        <option value="" selected disabled>Select Type</option>
+                                        <option value="Painting" {% if request.form.collectionType == 'Painting' %}selected{% endif %}>Painting</option>
+                                        <option value="Sculpture" {% if request.form.collectionType == 'Sculpture' %}selected{% endif %}>Sculpture</option>
+                                        <option value="Photography" {% if request.form.collectionType == 'Photography' %}selected{% endif %}>Photography</option>
+                                        <option value="Digital Art" {% if request.form.collectionType == 'Digital Art' %}selected{% endif %}>Digital Art</option>
+                                        <option value="Mixed Media" {% if request.form.collectionType == 'Mixed Media' %}selected{% endif %}>Mixed Media</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <input type="text" class="form-control mt-2 d-none" id="otherType" name="otherType" placeholder="Please specify type">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="fas fa-paint-brush"></i> Collection Medium
+                                </label>
+                                <div class="select-wrapper">
+                                    <select class="form-select" name="collectionMedium" id="collectionMedium">
+                                        <option value="" selected disabled>Select Medium</option>
+                                        <option value="Oil" {% if request.form.collectionMedium == 'Oil' %}selected{% endif %}>Oil</option>
+                                        <option value="Acrylic" {% if request.form.collectionMedium == 'Acrylic' %}selected{% endif %}>Acrylic</option>
+                                        <option value="Watercolor" {% if request.form.collectionMedium == 'Watercolor' %}selected{% endif %}>Watercolor</option>
+                                        <option value="Bronze" {% if request.form.collectionMedium == 'Bronze' %}selected{% endif %}>Bronze</option>
+                                        <option value="Marble" {% if request.form.collectionMedium == 'Marble' %}selected{% endif %}>Marble</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <input type="text" class="form-control mt-2 d-none" id="otherMedium" name="otherMedium" placeholder="Please specify medium">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="fas fa-brush"></i> Collection Style
+                                </label>
+                                <div class="select-wrapper">
+                                    <select class="form-select" name="collectionStyle" id="collectionStyle">
+                                        <option value="" selected disabled>Select Style</option>
+                                        <option value="Abstract" {% if request.form.collectionStyle == 'Abstract' %}selected{% endif %}>Abstract</option>
+                                        <option value="Realism" {% if request.form.collectionStyle == 'Realism' %}selected{% endif %}>Realism</option>
+                                        <option value="Impressionism" {% if request.form.collectionStyle == 'Impressionism' %}selected{% endif %}>Impressionism</option>
+                                        <option value="Modern" {% if request.form.collectionStyle == 'Modern' %}selected{% endif %}>Modern</option>
+                                        <option value="Contemporary" {% if request.form.collectionStyle == 'Contemporary' %}selected{% endif %}>Contemporary</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <input type="text" class="form-control mt-2 d-none" id="otherStyle" name="otherStyle" placeholder="Please specify style">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check-circle"></i> Submit
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Form validation and other scripts -->
+    <script>
+        // Enable Bootstrap form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+
+        // Handle "Other" options
+        document.addEventListener('DOMContentLoaded', function() {
+            const fields = ['Type', 'Medium', 'Style'];
+            
+            fields.forEach(field => {
+                const select = document.getElementById(`collection${field}`);
+                const otherInput = document.getElementById(`other${field}`);
+                
+                if (select && otherInput) {
+                    select.addEventListener('change', function() {
+                        if (this.value === 'other') {
+                            otherInput.classList.remove('d-none');
+                            otherInput.required = true;
+                        } else {
+                            otherInput.classList.add('d-none');
+                            otherInput.required = false;
+                            otherInput.value = '';
+                        }
+                    });
+                }
+            });
+
+            // Handle interviewer name validation
+            const interviewerInput = document.querySelector('input[name="interviewerName"]');
+            interviewerInput.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
+                if (cleanText) {
+                    document.execCommand('insertText', false, cleanText);
+                }
+            });
+
+            interviewerInput.addEventListener('input', function() {
+                if (this.value.match(/^[a-zA-Z\s-']{1,30}$/)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+
+            // Handle name fields paste events (including artist names)
+            const nameInputs = document.querySelectorAll('input[name="firstName"], input[name="lastName"], input[name="artistFirstName"], input[name="artistLastName"]');
+            nameInputs.forEach(input => {
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
+                    if (cleanText) {
+                        document.execCommand('insertText', false, cleanText);
+                    }
+                });
+
+                // Add input validation for artist name fields
+                if (input.name.startsWith('artist')) {
+                    input.addEventListener('input', function() {
+                        if (this.value.match(/^[a-zA-Z\s-']{0,15}$/)) {
+                            this.classList.remove('is-invalid');
+                            this.classList.add('is-valid');
+                        } else {
+                            this.classList.remove('is-valid');
+                            this.classList.add('is-invalid');
+                        }
+                    });
+                }
+            });
+
+            // Function to handle numeric field validation
+            function setupNumericValidation(inputElement, requiredLength) {
+                inputElement.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanText = text.replace(/[^0-9]/g, '').substr(0, requiredLength);
+                    if (cleanText) {
+                        document.execCommand('insertText', false, cleanText);
+                    }
+                });
+
+                inputElement.addEventListener('input', function() {
+                    if (this.value.length === requiredLength && this.value.match(new RegExp(`^[0-9]{${requiredLength}}$`))) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
+
+            // Setup validation for numeric fields
+            setupNumericValidation(document.querySelector('input[name="areaCode"]'), 3);
+            setupNumericValidation(document.querySelector('input[name="phoneNumber"]'), 7);
+            setupNumericValidation(document.querySelector('input[name="zip"]'), 5);
+            setupNumericValidation(document.querySelector('input[name="ssn"]'), 9);
+
+            // Handle state field validation
+            const stateInput = document.querySelector('input[name="state"]');
+            stateInput.addEventListener('input', function() {
+                if (this.value.length === 2 && this.value.match(/^[A-Z]{2}$/)) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

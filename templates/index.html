@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furman Art Gallery - Home</title>
+    <!-- Modern CSS Reset -->
+    <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #C7A464;
+            --bg-color: #f9f9f9;
+            --text-color: #2c2c2c;
+            --header-height: 80px;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.7;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 0;
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            height: 100%;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 12px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-link i {
+            font-size: 1rem;
+        }
+
+        .main-content {
+            margin-top: var(--header-height);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.7)), url('https://images.unsplash.com/photo-1594794312433-05a69a98b7a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        /* Quick Actions Section */
+        .quick-actions {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .section-title {
+            font-family: 'Cormorant', serif;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.05);
+            height: 100%;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border-color: var(--accent-color);
+        }
+
+        .action-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .action-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .action-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: var(--bg-color);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-item i {
+            font-size: 2rem;
+            color: var(--accent-color);
+        }
+
+        .feature-item h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .feature-item p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 0;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item .label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background: white;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-family: 'Cormorant', serif;
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-color);
+            border: none;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background: #B69355;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(199, 164, 100, 0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer h4 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <div class="header">
+        <div class="container h-100">
+            <div class="d-flex justify-content-between align-items-center header-content">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-palette me-2"></i>
+                    <h1 class="h3 mb-0">Furman Art Gallery</h1>
+                </div>
+                <nav class="d-flex gap-2">
+                    <a href="/" class="nav-link active">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/add_artwork" class="nav-link">
+                        <i class="fas fa-image"></i> Add Artwork
+                    </a>
+                    <a href="/add_artist" class="nav-link">
+                        <i class="fas fa-palette"></i> Add Artist
+                    </a>
+                    <a href="/add_sale" class="nav-link">
+                        <i class="fas fa-receipt"></i> Add Sale
+                    </a>
+                    <a href="/add_collector" class="nav-link">
+                        <i class="fas fa-star"></i> Add Collector
+                    </a>
+                    <a href="/add_mailing_list" class="nav-link">
+                        <i class="fas fa-envelope"></i> Join Mailing
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>Welcome to Furman Art Gallery</h1>
+                <p>Discover exceptional artworks and connect with talented artists in our curated collection.</p>
+                <a href="/add_mailing_list" class="btn btn-primary me-3">Join Our Community</a>
+                <a href="/add_artwork" class="btn btn-outline">Submit Artwork</a>
+            </div>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="quick-actions">
+            <div class="container">
+                <h2 class="section-title">Gallery Management</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <i class="fas fa-image"></i>
+                            <h3>Add Artwork</h3>
+                            <p>Register new artworks in our gallery collection with detailed information.</p>
+                            <a href="/add_artwork" class="btn btn-primary">Add New Artwork</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <i class="fas fa-palette"></i>
+                            <h3>Add Artist</h3>
+                            <p>Register new artists and maintain their profiles in our database.</p>
+                            <a href="/add_artist" class="btn btn-primary">Add New Artist</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <i class="fas fa-receipt"></i>
+                            <h3>Record Sale</h3>
+                            <p>Record and manage artwork sales and transactions.</p>
+                            <a href="/add_sale" class="btn btn-primary">Record New Sale</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Why Choose Furman Art Gallery</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h3>Professional Curation</h3>
+                                <p>Our expert curators carefully select and showcase exceptional artworks from talented artists.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h3>Artist Community</h3>
+                                <p>Join our thriving community of artists and art enthusiasts.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <div>
+                                <h3>Secure Transactions</h3>
+                                <p>Safe and secure art transactions with comprehensive documentation.</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-heart"></i>
+                            <div>
+                                <h3>Collector Support</h3>
+                                <p>Dedicated support for art collectors and comprehensive collection management.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="number">500+</div>
+                            <div class="label">Artworks</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="number">100+</div>
+                            <div class="label">Artists</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="number">50+</div>
+                            <div class="label">Collectors</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-item">
+                            <div class="number">1000+</div>
+                            <div class="label">Art Enthusiasts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <h2>Join Our Art Community</h2>
+                <p>Stay updated with new artworks, exhibitions, and exclusive events. Join our mailing list today!</p>
+                <a href="/add_mailing_list" class="btn btn-primary">Join Mailing List</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <h4>About Furman Art Gallery</h4>
+                        <p class="mb-0">We are dedicated to showcasing exceptional artworks and supporting talented artists. Our gallery provides a platform for artists to connect with art enthusiasts and collectors.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="/add_artwork">Add Artwork</a></li>
+                            <li><a href="/add_artist">Add Artist</a></li>
+                            <li><a href="/add_sale">Record Sale</a></li>
+                            <li><a href="/add_collector">Add Collector</a></li>
+                            <li><a href="/add_mailing_list">Join Mailing List</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Contact Information</h4>
+                        <ul class="footer-links">
+                            <li><i class="fas fa-map-marker-alt me-2"></i> 3300 Poinsett Highway, Greenville, SC 29613</li>
+                            <li><i class="fas fa-phone me-2"></i> (864) 906-0370</li>
+                            <li><i class="fas fa-envelope me-2"></i> jumajo8@furman.edu</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 Furman Art Gallery. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
