@@ -692,8 +692,8 @@
                                     <input type="text" class="form-control" name="artistLastName" 
                                            value="{{ request.form.artistLastName }}" 
                                            maxlength="15"
-                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                           pattern="[a-zA-Z\s-']*"
+                                           onkeypress="return /[a-zA-Z\s\-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s\-']*"
                                            required>
                                     <div class="form-text">Maximum 15 characters, letters only</div>
                                 </div>
@@ -704,8 +704,8 @@
                                     <input type="text" class="form-control" name="artistFirstName" 
                                            value="{{ request.form.artistFirstName }}" 
                                            maxlength="15"
-                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                           pattern="[a-zA-Z\s-']*"
+                                           onkeypress="return /[a-zA-Z\s\-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s\-']*"
                                            required>
                                     <div class="form-text">Maximum 15 characters, letters only</div>
                                 </div>
@@ -801,8 +801,25 @@
                         <!-- Owner Information -->
                         <div class="form-section">
                             <h5><i class="fas fa-user-tie"></i> Owner Information</h5>
-                            <p class="text-muted mb-4">If owned by someone other than the artist, please complete this section with the owner information:</p>
+                            <p class="text-muted mb-4">Please provide the owner's SSN. Note: The SSN must belong to a registered collector in our database. If the owner is not yet registered, please add them first using the "Add Collector" form.</p>
                             <div class="row g-3">
+                                <div class="col-12 mb-3">
+                                    <label class="form-label required-field">
+                                        <i class="fas fa-id-card"></i> Owner Social Security Number
+                                    </label>
+                                    <input type="text" class="form-control" name="ownerSSN" 
+                                           value="{{ request.form.ownerSSN }}"
+                                           maxlength="9"
+                                           onkeypress="return /[0-9]/.test(event.key)"
+                                           pattern="[0-9]{9}"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                           required>
+                                    <div class="invalid-feedback">Please enter exactly 9 digits for SSN</div>
+                                    <div class="form-text">9 digits only (e.g., 123456789) - Must be a registered collector's SSN</div>
+                                </div>
+                                <div class="col-12">
+                                    <p class="text-muted mb-4">If owned by someone other than the artist, please complete this section with the owner information:</p>
+                                </div>
                                 <div class="col-md-6">
                                     <label class="form-label">
                                         <i class="fas fa-user"></i> Owner Last Name
@@ -810,8 +827,8 @@
                                     <input type="text" class="form-control" name="ownerLastName" 
                                            value="{{ request.form.ownerLastName }}"
                                            maxlength="15"
-                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                           pattern="[a-zA-Z\s-']*">
+                                           onkeypress="return /[a-zA-Z\s\-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s\-']*">
                                     <div class="form-text">Maximum 15 characters, letters only</div>
                                 </div>
                                 <div class="col-md-6">
@@ -821,8 +838,8 @@
                                     <input type="text" class="form-control" name="ownerFirstName" 
                                            value="{{ request.form.ownerFirstName }}"
                                            maxlength="15"
-                                           onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                           pattern="[a-zA-Z\s-']*">
+                                           onkeypress="return /[a-zA-Z\s\-']/.test(event.key)"
+                                           pattern="[a-zA-Z\s\-']*">
                                     <div class="form-text">Maximum 15 characters, letters only</div>
                                 </div>
                                 <div class="col-12">
@@ -893,26 +910,13 @@
                                     <div class="form-text">7 digits only (e.g., 5551234)</div>
                                     <div class="invalid-feedback">Please enter exactly 7 digits</div>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label owner-required-field">
-                                        <i class="fas fa-id-card"></i> Owner Social Security Number
-                                    </label>
-                                    <input type="text" class="form-control owner-field" name="ownerSSN" 
-                                           value="{{ request.form.ownerSSN }}"
-                                           maxlength="9"
-                                           onkeypress="return /[0-9]/.test(event.key)"
-                                           pattern="[0-9]{9}"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                           data-owner-required="true">
-                                    <div class="invalid-feedback">Please enter exactly 9 digits for SSN</div>
-                                    <div class="form-text">9 digits only (e.g., 123456789) - Required if any owner information is provided</div>
-                                </div>
                             </div>
                         </div>
 
                         <!-- Gallery Information -->
                         <div class="form-section">
                             <h5><i class="fas fa-store"></i> Gallery Information</h5>
+                            <p class="text-muted mb-4">If the piece is chosen to be offered by the gallery, please complete this section.</p>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label required-field">
@@ -980,15 +984,17 @@
         (function () {
             'use strict'
             var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms).forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
+            if (forms.length) {
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            }
         })()
 
         // Handle "Other" options
@@ -998,80 +1004,86 @@
             const mediumSelect = document.getElementById('medium');
             const styleSelect = document.getElementById('style');
             
-            // Set initial values if they exist in the form data
-            if ("{{ request.form.usualType }}") {
-                typeSelect.value = "{{ request.form.usualType }}";
-            }
-            if ("{{ request.form.usualMedium }}") {
-                mediumSelect.value = "{{ request.form.usualMedium }}";
-            }
-            if ("{{ request.form.usualStyle }}") {
-                styleSelect.value = "{{ request.form.usualStyle }}";
-            }
+            // Only proceed if we have the select elements
+            if (typeSelect && mediumSelect && styleSelect) {
+                // Set initial values if they exist in the form data
+                if ("{{ request.form.usualType }}") {
+                    typeSelect.value = "{{ request.form.usualType }}";
+                }
+                if ("{{ request.form.usualMedium }}") {
+                    mediumSelect.value = "{{ request.form.usualMedium }}";
+                }
+                if ("{{ request.form.usualStyle }}") {
+                    styleSelect.value = "{{ request.form.usualStyle }}";
+                }
 
-            // Handle "Other" options
-            const fields = [
-                { select: 'type', other: 'otherType' },
-                { select: 'medium', other: 'otherMedium' },
-                { select: 'style', other: 'otherStyle' }
-            ];
-            
-            fields.forEach(field => {
-                const select = document.getElementById(field.select);
-                const otherInput = document.getElementById(field.other);
+                // Handle "Other" options
+                const fields = [
+                    { select: 'type', other: 'otherType' },
+                    { select: 'medium', other: 'otherMedium' },
+                    { select: 'style', other: 'otherStyle' }
+                ];
                 
-                if (select && otherInput) {
-                    // Check initial state
-                    if (select.value === 'other') {
-                        otherInput.classList.remove('d-none');
-                        otherInput.required = true;
-                    }
-
-                    select.addEventListener('change', function() {
-                        if (this.value === 'other') {
+                fields.forEach(field => {
+                    const select = document.getElementById(field.select);
+                    const otherInput = document.getElementById(field.other);
+                    
+                    if (select && otherInput) {
+                        // Check initial state
+                        if (select.value === 'other') {
                             otherInput.classList.remove('d-none');
                             otherInput.required = true;
+                        }
+
+                        select.addEventListener('change', function() {
+                            if (this.value === 'other') {
+                                otherInput.classList.remove('d-none');
+                                otherInput.required = true;
+                            } else {
+                                otherInput.classList.add('d-none');
+                                otherInput.required = false;
+                                otherInput.value = '';
+                            }
+                        });
+                    }
+                });
+
+                // Add form submission handler to validate dropdowns
+                const form = document.querySelector('form');
+                if (form) {
+                    form.addEventListener('submit', function(event) {
+                        const typeValue = typeSelect.value;
+                        const mediumValue = mediumSelect.value;
+                        const styleValue = styleSelect.value;
+
+                        if (!typeValue || typeValue === '') {
+                            typeSelect.setCustomValidity('Please select a type');
+                            event.preventDefault();
                         } else {
-                            otherInput.classList.add('d-none');
-                            otherInput.required = false;
-                            otherInput.value = '';
+                            typeSelect.setCustomValidity('');
+                        }
+
+                        if (!mediumValue || mediumValue === '') {
+                            mediumSelect.setCustomValidity('Please select a medium');
+                            event.preventDefault();
+                        } else {
+                            mediumSelect.setCustomValidity('');
+                        }
+
+                        if (!styleValue || styleValue === '') {
+                            styleSelect.setCustomValidity('Please select a style');
+                            event.preventDefault();
+                        } else {
+                            styleSelect.setCustomValidity('');
                         }
                     });
                 }
-            });
-
-            // Add form submission handler to validate dropdowns
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(event) {
-                const typeValue = typeSelect.value;
-                const mediumValue = mediumSelect.value;
-                const styleValue = styleSelect.value;
-
-                if (!typeValue || typeValue === '') {
-                    typeSelect.setCustomValidity('Please select a type');
-                    event.preventDefault();
-                } else {
-                    typeSelect.setCustomValidity('');
-                }
-
-                if (!mediumValue || mediumValue === '') {
-                    mediumSelect.setCustomValidity('Please select a medium');
-                    event.preventDefault();
-                } else {
-                    mediumSelect.setCustomValidity('');
-                }
-
-                if (!styleValue || styleValue === '') {
-                    styleSelect.setCustomValidity('Please select a style');
-                    event.preventDefault();
-                } else {
-                    styleSelect.setCustomValidity('');
-                }
-            });
+            }
         });
 
         // Replace the year validation with this new function
         function validateYear(input) {
+            if (!input) return;
             const year = parseInt(input.value);
             if (year < 1500 || year > 2025) {
                 input.setCustomValidity('Invalid year');
@@ -1084,76 +1096,77 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const yearInput = document.querySelector('input[name="yearCompleted"]');
-            yearInput.addEventListener('input', function() {
-                validateYear(this);
-            });
-        });
+            if (yearInput) {
+                yearInput.addEventListener('input', function() {
+                    validateYear(this);
+                });
+            }
 
-        // Update the paste event listener to include artist name fields
-        document.addEventListener('DOMContentLoaded', function() {
+            // Update the paste event listener to include artist name fields
             const nameInputs = document.querySelectorAll('input[name="artistFirstName"], input[name="artistLastName"], input[name="ownerFirstName"], input[name="ownerLastName"]');
-            nameInputs.forEach(input => {
-                input.addEventListener('paste', function(e) {
+            if (nameInputs.length) {
+                nameInputs.forEach(input => {
+                    input.addEventListener('paste', function(e) {
+                        e.preventDefault();
+                        const text = (e.clipboardData || window.clipboardData).getData('text');
+                        const cleanText = text.replace(/[^a-zA-Z\s\-']/g, '');
+                        if (cleanText) {
+                            document.execCommand('insertText', false, cleanText);
+                        }
+                    });
+                });
+            }
+
+            // Add state field validation
+            const stateInput = document.querySelector('input[name="ownerState"]');
+            if (stateInput) {
+                stateInput.addEventListener('paste', function(e) {
                     e.preventDefault();
                     const text = (e.clipboardData || window.clipboardData).getData('text');
-                    const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
+                    const cleanText = text.replace(/[^A-Za-z]/g, '').substr(0, 2).toUpperCase();
                     if (cleanText) {
                         document.execCommand('insertText', false, cleanText);
                     }
                 });
-            });
-        });
 
-        // Add state field validation
-        document.addEventListener('DOMContentLoaded', function() {
-            const stateInput = document.querySelector('input[name="ownerState"]');
-            stateInput.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                const cleanText = text.replace(/[^A-Za-z]/g, '').substr(0, 2).toUpperCase();
-                if (cleanText) {
-                    document.execCommand('insertText', false, cleanText);
-                }
-            });
+                stateInput.addEventListener('input', function() {
+                    if (this.value.length === 2 && this.value.match(/^[A-Z]{2}$/)) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
 
-            stateInput.addEventListener('input', function() {
-                if (this.value.length === 2 && this.value.match(/^[A-Z]{2}$/)) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-        });
-
-        // Add ZIP code validation
-        document.addEventListener('DOMContentLoaded', function() {
+            // Add ZIP code validation
             const zipInput = document.querySelector('input[name="ownerZip"]');
-            zipInput.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                const cleanText = text.replace(/[^0-9]/g, '').substr(0, 5);
-                if (cleanText) {
-                    document.execCommand('insertText', false, cleanText);
-                }
-            });
+            if (zipInput) {
+                zipInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const cleanText = text.replace(/[^0-9]/g, '').substr(0, 5);
+                    if (cleanText) {
+                        document.execCommand('insertText', false, cleanText);
+                    }
+                });
 
-            zipInput.addEventListener('input', function() {
-                if (this.value.length === 5 && this.value.match(/^[0-9]{5}$/)) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-        });
+                zipInput.addEventListener('input', function() {
+                    if (this.value.length === 5 && this.value.match(/^[0-9]{5}$/)) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            }
 
-        // Add validation for numeric fields
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to handle numeric field validation
+            // Add validation for numeric fields
             function setupNumericValidation(inputElement, requiredLength) {
+                if (!inputElement) return;
+                
                 inputElement.addEventListener('paste', function(e) {
                     e.preventDefault();
                     const text = (e.clipboardData || window.clipboardData).getData('text');
@@ -1178,216 +1191,124 @@
             setupNumericValidation(document.querySelector('input[name="ownerAreaCode"]'), 3);
             setupNumericValidation(document.querySelector('input[name="ownerPhoneNumber"]'), 7);
             setupNumericValidation(document.querySelector('input[name="ownerSSN"]'), 9);
-        });
 
-        // Add this to your existing JavaScript
-        document.addEventListener('DOMContentLoaded', function() {
             const galleryInputs = document.querySelectorAll('.gallery-field');
             const form = document.querySelector('form');
 
-            function validateGalleryFields() {
-                let isValid = true;
-                galleryInputs.forEach(input => {
-                    if (input.dataset.required === 'true' && !input.value) {
-                        input.classList.add('is-invalid');
-                        isValid = false;
-                    } else {
-                        input.classList.remove('is-invalid');
+            if (galleryInputs.length && form) {
+                function validateGalleryFields() {
+                    let isValid = true;
+                    galleryInputs.forEach(input => {
+                        if (input.dataset.required === 'true' && !input.value) {
+                            input.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+                    return isValid;
+                }
+
+                form.addEventListener('submit', function(event) {
+                    if (!validateGalleryFields()) {
+                        event.preventDefault();
+                        event.stopPropagation();
                     }
                 });
-                return isValid;
             }
 
-            // Add form validation
-            form.addEventListener('submit', function(event) {
-                if (!validateGalleryFields()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-            });
-        });
-
-        // Add owner information validation
-        document.addEventListener('DOMContentLoaded', function() {
+            // Add owner information validation
             const ownerFields = document.querySelectorAll('.owner-field');
             const ownerRequiredLabels = document.querySelectorAll('.owner-required-field');
             
-            function checkOwnerFields() {
-                // Check if any owner field has a value
-                let hasOwnerInfo = false;
-                ownerFields.forEach(field => {
-                    if (field.value.trim() !== '') {
-                        hasOwnerInfo = true;
-                    }
-                });
-
-                // Make all owner fields required if any has value
-                ownerFields.forEach(field => {
-                    if (hasOwnerInfo) {
-                        field.setAttribute('required', '');
-                        field.dataset.ownerRequired = 'true';
-                    } else {
-                        field.removeAttribute('required');
-                        field.dataset.ownerRequired = 'false';
-                    }
-                });
-
-                // Show/hide required asterisk
-                ownerRequiredLabels.forEach(label => {
-                    if (hasOwnerInfo) {
-                        label.classList.add('required');
-                    } else {
-                        label.classList.remove('required');
-                    }
-                });
-            }
-
-            // Add event listeners to all owner fields
-            ownerFields.forEach(field => {
-                field.addEventListener('input', checkOwnerFields);
-                field.addEventListener('change', checkOwnerFields);
-            });
-
-            // Check on form submission
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(event) {
-                const hasOwnerInfo = Array.from(ownerFields).some(field => field.value.trim() !== '');
-                
-                if (hasOwnerInfo) {
-                    const ssnField = document.querySelector('input[name="ownerSSN"]');
-                    if (!ssnField.value || !ssnField.value.match(/^[0-9]{9}$/)) {
-                        event.preventDefault();
-                        ssnField.classList.add('is-invalid');
-                        ssnField.focus();
-                    }
-                }
-            });
-
-            // Initial check on page load
-            checkOwnerFields();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            const allInputs = form.querySelectorAll('input, select');
-
-            // Remove all validation classes on page load
-            function clearValidation() {
-                allInputs.forEach(input => {
-                    input.classList.remove('is-valid', 'is-invalid');
-                });
-            }
-            
-            clearValidation();
-
-            // Function to validate a single field
-            function validateField(input) {
-                // Always start by removing existing validation classes
-                input.classList.remove('is-valid', 'is-invalid');
-
-                // Don't show any validation state if the field is empty
-                if (!input.value) {
-                    return false;
-                }
-
-                // Specific validation for different field types
-                if (input.type === 'date') {
-                    // Only show valid state if a date is actually selected
-                    if (input.value) {
-                        input.classList.add('is-valid');
-                        return true;
-                    }
-                    return false;
-                }
-
-                if (input.type === 'number') {
-                    const value = parseFloat(input.value);
-                    if (!isNaN(value) && value > 0) {
-                        input.classList.add('is-valid');
-                        return true;
-                    }
-                    input.classList.add('is-invalid');
-                    return false;
-                }
-
-                if (input.tagName === 'SELECT') {
-                    if (input.value && input.value !== 'Select Style') {
-                        input.classList.add('is-valid');
-                        return true;
-                    }
-                    input.classList.add('is-invalid');
-                    return false;
-                }
-
-                // For all other input types, if we get here and have a value, it's valid
-                if (input.value) {
-                    input.classList.add('is-valid');
-                    return true;
-                }
-
-                return false;
-            }
-
-            // Add input event listeners for real-time validation
-            allInputs.forEach(input => {
-                ['input', 'change', 'blur'].forEach(eventType => {
-                    input.addEventListener(eventType, function() {
-                        validateField(this);
+            if (ownerFields.length && ownerRequiredLabels.length) {
+                function checkOwnerFields() {
+                    let hasOwnerInfo = false;
+                    ownerFields.forEach(field => {
+                        if (field.value.trim() !== '') {
+                            hasOwnerInfo = true;
+                        }
                     });
-                });
-            });
 
-            // Handle form submission
-            form.addEventListener('submit', function(event) {
-                let isValid = true;
-                
-                allInputs.forEach(input => {
-                    // For required fields, show invalid state if empty on submit
-                    if ((input.hasAttribute('required') || input.dataset.required === 'true') && !input.value) {
-                        input.classList.add('is-invalid');
-                        isValid = false;
-                    } else if (!validateField(input)) {
-                        isValid = false;
-                    }
-                });
+                    ownerFields.forEach(field => {
+                        // Only SSN should be required, other owner fields are optional
+                        if (field.name === 'ownerSSN') {
+                            field.setAttribute('required', '');
+                            field.dataset.ownerRequired = 'true';
+                        } else {
+                            field.removeAttribute('required');
+                            field.dataset.ownerRequired = 'false';
+                        }
+                    });
 
-                if (!isValid) {
-                    event.preventDefault();
-                    event.stopPropagation();
+                    ownerRequiredLabels.forEach(label => {
+                        // Only show required asterisk for SSN
+                        if (label.textContent.includes('Social Security Number')) {
+                            label.classList.add('required');
+                        } else {
+                            label.classList.remove('required');
+                        }
+                    });
                 }
-            });
+
+                ownerFields.forEach(field => {
+                    field.addEventListener('input', checkOwnerFields);
+                    field.addEventListener('change', checkOwnerFields);
+                });
+
+                if (form) {
+                    form.addEventListener('submit', function(event) {
+                        const ssnField = document.querySelector('input[name="ownerSSN"]');
+                        if (ssnField && (!ssnField.value || !ssnField.value.match(/^[0-9]{9}$/))) {
+                            event.preventDefault();
+                            ssnField.classList.add('is-invalid');
+                            ssnField.focus();
+                        }
+                    });
+                }
+
+                checkOwnerFields();
+            }
         });
 
         function toggleFormsMenu(button) {
+            if (!button) return;
             const menu = button.closest('.forms-menu');
-            menu.classList.toggle('active');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
         }
 
         // Close the forms menu when clicking outside
         document.addEventListener('click', function(event) {
             const formsMenus = document.querySelectorAll('.forms-menu');
-            formsMenus.forEach(menu => {
-                if (!menu.contains(event.target)) {
-                    menu.classList.remove('active');
-                }
-            });
+            if (formsMenus.length) {
+                formsMenus.forEach(menu => {
+                    if (!menu.contains(event.target)) {
+                        menu.classList.remove('active');
+                    }
+                });
+            }
         });
 
         // Add this to handle the user menu toggle
         document.addEventListener('DOMContentLoaded', function() {
             const userMenu = document.querySelector('.user-menu');
-            const userButton = userMenu.querySelector('.user-button');
-
-            userButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userMenu.classList.toggle('active');
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!userMenu.contains(e.target)) {
-                    userMenu.classList.remove('active');
+            if (userMenu) {
+                const userButton = userMenu.querySelector('.user-button');
+                if (userButton) {
+                    userButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        userMenu.classList.toggle('active');
+                    });
                 }
-            });
+
+                document.addEventListener('click', function(e) {
+                    if (!userMenu.contains(e.target)) {
+                        userMenu.classList.remove('active');
+                    }
+                });
+            }
         });
     </script>
 </body>

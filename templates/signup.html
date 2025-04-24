@@ -14,7 +14,7 @@
         :root {
             --primary-color: #1a1a1a;
             --accent-color: #C7A464;
-            --bg-color: #f9f9f9;
+            --bg-color: #f0ebe1;
             --text-color: #2c2c2c;
             --border-radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -29,17 +29,34 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(199, 164, 100, 0.05), rgba(199, 164, 100, 0.02));
+            pointer-events: none;
+            z-index: 0;
         }
 
         .signup-container {
             background-color: white;
             border-radius: var(--border-radius);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
             padding: 50px;
             width: 100%;
             max-width: 600px;
             margin: 20px;
             border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .section-title {

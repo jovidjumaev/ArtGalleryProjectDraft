@@ -516,11 +516,11 @@
     </div>
 
     <div class="container main-content">
-<div class="form-container">
+        <div class="form-container">
             <h2 class="section-title">Record New Sale</h2>
             <p class="section-subtitle">Document a new artwork sale in our gallery system.</p>
 
-  {% if success %}
+            {% if success %}
                 <div class="alert alert-success text-center" role="alert">
                     <h4 class="alert-heading">✨ Sale Successfully Recorded!</h4>
                     <p class="mb-0">The sale has been successfully recorded in our system.</p>
@@ -529,8 +529,8 @@
                     <a href="/add_sale" class="btn btn-primary me-md-2">Record Another Sale</a>
                     <a href="/" class="btn btn-secondary">Return to Home</a>
                 </div>
-  {% else %}
-    {% if error %}
+            {% else %}
+                {% if error %}
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-circle"></i>
                         <div>
@@ -538,7 +538,7 @@
                             <p class="mb-0">{{ error }}</p>
                         </div>
                     </div>
-    {% endif %}
+                {% endif %}
 
                 <form method="POST" class="needs-validation" novalidate>
                     <!-- Artwork Information -->
@@ -562,10 +562,9 @@
                                     <i class="fas fa-user"></i> Artist Last Name
                                 </label>
                                 <input type="text" class="form-control" name="artistLastName" 
-                                       value="{{ request.form.artistLastName }}"
-                                       maxlength="15"
-                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
+                                       value="{{ form_data.artistLastName if form_data else '' }}"
+                                       pattern="[a-zA-Z\s\-']*"
+                                       title="Only letters, spaces, hyphens, and apostrophes allowed"
                                        required>
                                 <div class="form-text">Maximum 15 characters, letters only</div>
                             </div>
@@ -574,10 +573,9 @@
                                     <i class="fas fa-user"></i> Artist First Name
                                 </label>
                                 <input type="text" class="form-control" name="artistFirstName" 
-                                       value="{{ request.form.artistFirstName }}"
-                                       maxlength="15"
-                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
+                                       value="{{ form_data.artistFirstName if form_data else '' }}"
+                                       pattern="[a-zA-Z\s\-']*"
+                                       title="Only letters, spaces, hyphens, and apostrophes allowed"
                                        required>
                                 <div class="form-text">Maximum 15 characters, letters only</div>
                             </div>
@@ -756,25 +754,25 @@
                                 <label class="form-label required-field">
                                     <i class="fas fa-tag"></i> Sale Price
                                 </label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="salePrice" 
+                                <input type="number" step="0.01" min="0" max="99999.99" class="form-control" name="salePrice" 
                                        value="{{ form_data.salePrice if form_data else '' }}" required>
-                                <div class="form-text">Enter sale price in USD</div>
+                                <div class="form-text">Enter sale price in USD (max: 99,999.99)</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required-field">
                                     <i class="fas fa-dollar-sign"></i> Sale Tax
                                 </label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="saleTax" 
+                                <input type="number" step="0.01" min="0" max="999.99" class="form-control" name="saleTax" 
                                        value="{{ form_data.saleTax if form_data else '' }}" required>
-                                <div class="form-text">Enter tax amount in USD</div>
+                                <div class="form-text">Enter tax amount in USD (max: 999.99)</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required-field">
                                     <i class="fas fa-money-bill-wave"></i> Amount Remitted To Owner
                                 </label>
-                                <input type="number" step="0.01" min="0" class="form-control" name="amountRemittedToOwner" 
+                                <input type="number" step="0.01" min="0" max="99999.99" class="form-control" name="amountRemittedToOwner" 
                                        value="{{ form_data.amountRemittedToOwner if form_data else '' }}" required>
-                                <div class="form-text">Amount to be paid to the owner</div>
+                                <div class="form-text">Amount to be paid to the owner (max: 99,999.99)</div>
                             </div>
                         </div>
                     </div>
@@ -815,9 +813,9 @@
                             <i class="fas fa-check-circle"></i> Generate Invoice
                         </button>
                     </div>
-    </form>
-  {% endif %}
-</div>
+                </form>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Font Awesome -->
@@ -827,37 +825,50 @@
     
     <!-- Form validation and other scripts -->
     <script>
-        // Enable Bootstrap form validation
-        (function () {
-            'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms).forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-                    form.classList.add('was-validated')
-                }, false)
-            })
-        })()
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle name fields paste events (including owner names)
-            const nameInputs = document.querySelectorAll('input[name="artistFirstName"], input[name="artistLastName"], input[name="artworkTitle"], input[name="ownerFirstName"], input[name="ownerLastName"]');
-            nameInputs.forEach(input => {
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const text = (e.clipboardData || window.clipboardData).getData('text');
-                    const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
-                    if (cleanText) {
-                        document.execCommand('insertText', false, cleanText);
+            console.log('Form validation script loaded');
+            
+            // Enable Bootstrap form validation
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    if (form) {
+                        console.log('Found form with needs-validation class');
+                        form.addEventListener('submit', function (event) {
+                            console.log('Form submission attempted');
+                            if (!form.checkValidity()) {
+                                console.log('Form validation failed');
+                                event.preventDefault()
+                                event.stopPropagation()
+                            } else {
+                                console.log('Form validation passed, submitting...');
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
                     }
-                });
+                })
+            })()
+
+            // Handle name fields paste events
+            const nameInputs = document.querySelectorAll('input[name="artistFirstName"], input[name="artistLastName"], input[name="artworkTitle"], input[name="buyerFirstName"], input[name="buyerLastName"]');
+            nameInputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('paste', function(e) {
+                        e.preventDefault();
+                        const text = (e.clipboardData || window.clipboardData).getData('text');
+                        const cleanText = text.replace(/[^a-zA-Z\s\-']/g, '');
+                        if (cleanText) {
+                            document.execCommand('insertText', false, cleanText);
+                        }
+                    });
+                }
             });
 
-            // Handle numeric fields validation for owner information
+            // Handle numeric fields validation
             function setupNumericValidation(inputElement, requiredLength) {
+                if (!inputElement) return;
+                
                 inputElement.addEventListener('paste', function(e) {
                     e.preventDefault();
                     const text = (e.clipboardData || window.clipboardData).getData('text');
@@ -878,100 +889,52 @@
                 });
             }
 
-            // Setup validation for owner numeric fields
-            setupNumericValidation(document.querySelector('input[name="ownerAreaCode"]'), 3);
-            setupNumericValidation(document.querySelector('input[name="ownerPhoneNumber"]'), 7);
-            setupNumericValidation(document.querySelector('input[name="ownerZip"]'), 5);
+            // Setup validation for numeric fields
+            const numericFields = [
+                { element: document.querySelector('input[name="buyerAreaCode"]'), length: 3 },
+                { element: document.querySelector('input[name="buyerPhoneNumber"]'), length: 7 },
+                { element: document.querySelector('input[name="buyerZip"]'), length: 5 }
+            ];
 
-            // Handle owner state field validation
-            const ownerStateInput = document.querySelector('input[name="ownerState"]');
-            ownerStateInput.addEventListener('input', function() {
-                if (this.value.length === 2 && this.value.match(/^[A-Z]{2}$/)) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-
-            // Handle name fields paste events (including buyer names)
-            const buyerNameInputs = document.querySelectorAll('input[name="artistFirstName"], input[name="artistLastName"], input[name="artworkTitle"], input[name="ownerFirstName"], input[name="ownerLastName"], input[name="buyerFirstName"], input[name="buyerLastName"]');
-            buyerNameInputs.forEach(input => {
-                input.addEventListener('paste', function(e) {
-                    e.preventDefault();
-                    const text = (e.clipboardData || window.clipboardData).getData('text');
-                    const cleanText = text.replace(/[^a-zA-Z\s-']/g, '');
-                    if (cleanText) {
-                        document.execCommand('insertText', false, cleanText);
-                    }
-                });
-            });
-
-            // Setup validation for buyer numeric fields
-            setupNumericValidation(document.querySelector('input[name="buyerAreaCode"]'), 3);
-            setupNumericValidation(document.querySelector('input[name="buyerPhoneNumber"]'), 7);
-            setupNumericValidation(document.querySelector('input[name="buyerZip"]'), 5);
-
-            // Handle buyer state field validation
-            const buyerStateInput = document.querySelector('input[name="buyerState"]');
-            buyerStateInput.addEventListener('input', function() {
-                if (this.value.length === 2 && this.value.match(/^[A-Z]{2}$/)) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-
-            // Handle salesperson signature validation
-            const signatureInput = document.querySelector('input[name="salespersonSignature"]');
-            signatureInput.addEventListener('paste', function(e) {
-                e.preventDefault();
-                const text = (e.clipboardData || window.clipboardData).getData('text');
-                const cleanText = text.replace(/[^A-Za-z\s-']/g, '').toUpperCase();
-                if (cleanText) {
-                    document.execCommand('insertText', false, cleanText);
-                }
-            });
-
-            signatureInput.addEventListener('input', function() {
-                if (this.value.match(/^[A-Z\s-']{1,30}$/)) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
+            numericFields.forEach(field => {
+                if (field.element) {
+                    setupNumericValidation(field.element, field.length);
                 }
             });
 
             // User menu toggle
-            const userMenu = document.querySelector('.user-menu');
             const userButton = document.querySelector('.user-button');
+            const userMenu = document.querySelector('.user-menu');
             
-            userButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                userMenu.classList.toggle('active');
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!userMenu.contains(e.target)) {
-                    userMenu.classList.remove('active');
-                }
-            });
+            if (userButton && userMenu) {
+                userButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userMenu.classList.toggle('active');
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (userMenu && !userMenu.contains(e.target)) {
+                        userMenu.classList.remove('active');
+                    }
+                });
+            }
 
+            // Forms menu toggle
             function toggleFormsMenu(button) {
-                const menu = button.closest('.forms-menu');
-                menu.classList.toggle('active');
+                if (button) {
+                    const menu = button.closest('.forms-menu');
+                    if (menu) {
+                        menu.classList.toggle('active');
+                    }
+                }
             }
 
             // Close the forms menu when clicking outside
             document.addEventListener('click', function(event) {
                 const formsMenus = document.querySelectorAll('.forms-menu');
                 formsMenus.forEach(menu => {
-                    if (!menu.contains(event.target)) {
+                    if (menu && !menu.contains(event.target)) {
                         menu.classList.remove('active');
                     }
                 });

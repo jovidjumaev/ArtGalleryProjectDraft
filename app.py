@@ -1,13 +1,22 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+import sys
+import os
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from db import get_connection
 import oracledb
 import re
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize Flask app
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # You should use a strong secret key in production
+app.secret_key = os.urandom(24)
 
 def create_users_table():
     """Create the users table if it doesn't exist"""
@@ -187,13 +196,14 @@ def signup():
             password_hash = generate_password_hash(password)
             
             print("Attempting to insert new user into database...")
-            user_id_var = cursor.var(int)
             
             insert_query = """
                 INSERT INTO users (username, password_hash, email, first_name, last_name)
                 VALUES (:username, :password_hash, :email, :first_name, :last_name)
                 RETURNING user_id INTO :user_id
             """
+            
+            user_id_var = cursor.var(int)
             
             print("Executing insert query...")
             cursor.execute(insert_query, {
@@ -205,70 +215,28 @@ def signup():
                 'user_id': user_id_var
             })
             
-            user_id = user_id_var.getvalue()[0]
-            print(f"User inserted successfully. User ID: {user_id}")
-            
-            print("Committing transaction...")
+            # Commit the transaction
             conn.commit()
-            print("Transaction committed successfully")
             
-            # Log the user in
+            # Get the new user's ID
+            user_id = user_id_var.getvalue()[0]
+            
+            # Set up the session
             session['user_id'] = user_id
             session['user_name'] = f"{first_name} {last_name}"
-            print("Session variables set successfully")
+            session['logged_in'] = True
             
-            print("=== End of Signup Process ===\n")
+            print("User created successfully!")
             return redirect(url_for('index'))
             
-        except oracledb.DatabaseError as e:
-            error_msg = str(e)
-            print(f"\nDatabase Error Details:")
-            print(f"Error message: {error_msg}")
-            print(f"Error code: {e.code if hasattr(e, 'code') else 'Unknown'}")
-            print(f"Error offset: {e.offset if hasattr(e, 'offset') else 'Unknown'}")
-            
-            if 'conn' in locals():
-                print("Rolling back transaction...")
-                conn.rollback()
-            
-            if "ORA-00001" in error_msg:
-                if "USER_USERNAME_UK" in error_msg:
-                    error = "Username already exists"
-                elif "USER_EMAIL_UK" in error_msg:
-                    error = "Email already registered"
-                else:
-                    error = f"A database constraint was violated: {error_msg}"
-            else:
-                error = f"A database error occurred: {error_msg}"
-            
-            return render_template('signup.html', error=error)
-            
         except Exception as e:
-            print(f"\nUnexpected Error Details:")
-            print(f"Error type: {type(e).__name__}")
-            print(f"Error message: {str(e)}")
-            import traceback
-            print("Full traceback:")
-            print(traceback.format_exc())
-            
-            if 'conn' in locals():
-                print("Rolling back transaction...")
-                conn.rollback()
-            
-            return render_template('signup.html', 
-                error=f"An unexpected error occurred: {type(e).__name__} - {str(e)}")
-            
+            print(f"Signup error: {str(e)}")
+            return render_template('signup.html', error='An error occurred during signup')
         finally:
-            try:
-                if 'cursor' in locals() and cursor:
-                    print("Closing cursor...")
-                    cursor.close()
-                if 'conn' in locals() and conn:
-                    print("Closing database connection...")
-                    conn.close()
-                print("Cleanup completed successfully")
-            except Exception as e:
-                print(f"Error during cleanup: {str(e)}")
+            if 'cursor' in locals():
+                cursor.close()
+            if 'conn' in locals():
+                conn.close()
     
     return render_template('signup.html')
 
@@ -458,31 +426,47 @@ def add_artwork():
     cur = None
     
     if request.method == 'POST':
+        print("DEBUG: Received POST request to /add_artwork")
+        print("DEBUG: Form data:", request.form.to_dict())
+        
         try:
             # Validate required gallery fields
             date_listed = request.form.get('dateListed', '').strip()
             asking_price = request.form.get('askingPrice', '').strip()
             status = request.form.get('status', '').strip() or 'for sale'  # Default to 'for sale'
             
+            print("DEBUG: Gallery fields validation:")
+            print(f"- Date Listed: {date_listed}")
+            print(f"- Asking Price: {asking_price}")
+            print(f"- Status: {status}")
+            
             if not date_listed:
+                print("DEBUG: Date Listed is missing")
                 return render_template('add_artwork.html', success=False,
                                     error="❌ Date Listed is required.")
             if not asking_price:
+                print("DEBUG: Asking Price is missing")
                 return render_template('add_artwork.html', success=False,
                                     error="❌ Asking Price is required.")
             
             try:
                 asking_price = float(asking_price)
                 if asking_price <= 0:
+                    print("DEBUG: Invalid asking price (<=0)")
                     return render_template('add_artwork.html', success=False,
                                         error="❌ Asking Price must be greater than 0.")
             except ValueError:
+                print("DEBUG: Invalid asking price format")
                 return render_template('add_artwork.html', success=False,
                                     error="❌ Please enter a valid number for Asking Price.")
 
             # Step 1: Read name and lookup artistId
             artist_first = request.form.get('artistFirstName', '').strip()
             artist_last = request.form.get('artistLastName', '').strip()
+
+            print("DEBUG: Artist information:")
+            print(f"- First Name: {artist_first}")
+            print(f"- Last Name: {artist_last}")
 
             conn = get_connection()
             cur = conn.cursor()
@@ -640,9 +624,11 @@ def add_artwork():
                 error = "❌ An artwork with this title already exists for this artist. Please use a different title."
             elif "ORA-02291" in error_msg:
                 if "ARTWORK_COLLECTORSOCIALSECURITYNUMBER_FK" in error_msg:
-                    error = "❌ The provided owner SSN was not found in our database. Please verify the SSN or leave it blank."
+                    error = "❌ The Owner SSN you entered does not exist in our collector database. Please first register this person as a collector using the 'Add Collector' form, or leave the SSN field blank if they are not a collector."
+                elif "ARTWORK_ARTISTID_FK" in error_msg:
+                    error = "❌ The specified artist does not exist in our database. Please verify the artist name."
                 else:
-                    error = "❌ One or more reference constraints failed. Please check your input."
+                    error = "❌ A database reference constraint failed. Please check that all entered IDs and references exist in our system."
             else:
                 error = "❌ An error occurred while saving the artwork. Please check your input and try again."
 
@@ -668,23 +654,22 @@ def add_artwork():
 @app.route('/add_sale', methods=['GET', 'POST'])
 @login_required
 def add_sale():
+    print("\n=== Starting add_sale route ===")
+    print(f"Request method: {request.method}")
+    
     if request.method == 'POST':
+        print("\n=== Processing POST request for sale ===")
+        print("Raw form data received:", request.form.to_dict())
+        
         conn = None
         cur = None
         try:
             # Step 1: Validate and collect form data
+            print("\n=== Step 1: Collecting form data ===")
             data = {
                 'artworkTitle': request.form.get('artworkTitle', '').strip(),
                 'artistLastName': request.form.get('artistLastName', '').strip(),
                 'artistFirstName': request.form.get('artistFirstName', '').strip(),
-                'ownerLastName': request.form.get('ownerLastName', '').strip(),
-                'ownerFirstName': request.form.get('ownerFirstName', '').strip(),
-                'ownerStreet': request.form.get('ownerStreet', '').strip(),
-                'ownerCity': request.form.get('ownerCity', '').strip(),
-                'ownerState': request.form.get('ownerState', '').strip(),
-                'ownerZip': request.form.get('ownerZip', '').strip(),
-                'ownerAreaCode': request.form.get('ownerAreaCode', '').strip(),
-                'ownerPhoneNumber': request.form.get('ownerPhoneNumber', '').strip(),
                 'buyerLastName': request.form.get('buyerLastName', '').strip(),
                 'buyerFirstName': request.form.get('buyerFirstName', '').strip(),
                 'buyerStreet': request.form.get('buyerStreet', '').strip(),
@@ -699,9 +684,15 @@ def add_sale():
                 'salespersonSSN': request.form.get('salespersonSSN', '').strip(),
                 'saleDate': request.form.get('saleDate', '').strip()
             }
+            
+            print("\nRaw numeric values from form:")
+            print(f"Sale Price (raw): '{data['salePrice']}'")
+            print(f"Sale Tax (raw): '{data['saleTax']}'")
+            print(f"Amount Remitted (raw): '{data['amountRemittedToOwner']}'")
 
             # Store form data in session
             session['sale_form_data'] = data
+            print("Stored form data in session")
 
             # Validate required fields first
             required_fields = [
@@ -713,16 +704,144 @@ def add_sale():
             
             missing_fields = [field for field in required_fields if not data[field]]
             if missing_fields:
+                print(f"Missing required fields: {missing_fields}")
                 return render_template('add_sale.html', 
                     error=f"❌ Required fields missing: {', '.join(missing_fields)}",
                     form_data=data)
 
-            # Validate numeric fields
+            conn = get_connection()
+            cur = conn.cursor()
+
+            print("\n=== Step 2: Looking up artwork ===")
+            print(f"Searching for artwork: '{data['artworkTitle']}' by {data['artistFirstName']} {data['artistLastName']}")
+            
+            # Lookup artwork ID from title and artist name
+            cur.execute("""
+                SELECT A.artworkId, A.askingPrice
+                FROM Artwork A
+                JOIN Artist R ON A.artistId = R.artistId
+                WHERE LOWER(A.workTitle) = LOWER(:title)
+                  AND LOWER(R.firstName) = LOWER(:firstName)
+                  AND LOWER(R.lastName) = LOWER(:lastName)
+            """, {
+                'title': data['artworkTitle'],
+                'firstName': data['artistFirstName'],
+                'lastName': data['artistLastName']
+            })
+            artwork_row = cur.fetchone()
+
+            if not artwork_row:
+                print("Artwork not found")
+                return render_template('add_sale.html', 
+                    error="❌ Artwork not found. Please verify the title and artist name.",
+                    form_data=data)
+
+            artwork_id = artwork_row[0]
+            asking_price = float(artwork_row[1])
+            print(f"Found artwork ID: {artwork_id}, Asking Price: {asking_price}")
+
+            # Check if artwork is already sold
+            cur.execute("""
+                SELECT S.invoiceNumber, S.saleDate
+                FROM Sale S
+                WHERE S.artworkId = :artworkId
+            """, {'artworkId': artwork_id})
+            
+            existing_sale = cur.fetchone()
+            if existing_sale:
+                print(f"Artwork already sold: Invoice #{existing_sale[0]} on {existing_sale[1]}")
+                return render_template('add_sale.html', 
+                    error=f"❌ This artwork has already been sold (Invoice #{existing_sale[0]} on {existing_sale[1].strftime('%Y-%m-%d')})",
+                    form_data=data)
+
+            print("\n=== Step 3: Looking up buyer ===")
+            print(f"Searching for buyer: {data['buyerFirstName']} {data['buyerLastName']}")
+            
+            # Look for existing collector (buyer)
+            cur.execute("""
+                SELECT SOCIALSECURITYNUMBER, firstName, lastName, street, zip 
+                FROM Collector
+                WHERE LOWER(firstName) = LOWER(:firstName)
+                  AND LOWER(lastName) = LOWER(:lastName)
+                  AND LOWER(street) = LOWER(:street)
+                  AND zip = :zip
+            """, {
+                'firstName': data['buyerFirstName'],
+                'lastName': data['buyerLastName'],
+                'street': data['buyerStreet'],
+                'zip': data['buyerZip']
+            })
+            collector = cur.fetchone()
+            
+            if not collector:
+                print("Buyer not found in collector database")
+                return render_template('add_sale.html', 
+                    error=f"❌ Buyer '{data['buyerFirstName']} {data['buyerLastName']}' not found in collector database. Please verify the name and address or register them as a collector first.",
+                    form_data=data)
+
+            buyer_ssn = collector[0]
+            print(f"Found buyer SSN: {buyer_ssn}")
+
+            print("\n=== Step 4: Verifying salesperson ===")
+            # Verify salesperson exists
+            cur.execute("""
+                SELECT COUNT(*) 
+                FROM Salesperson 
+                WHERE socialSecurityNumber = :ssn
+            """, {'ssn': data['salespersonSSN']})
+            
+            if cur.fetchone()[0] == 0:
+                print("Salesperson not found")
+                return render_template('add_sale.html', 
+                    error="❌ Salesperson not found. Please verify the SSN.",
+                    form_data=data)
+
+            print("Salesperson verified")
+
+            print("\n=== Step 5: Validating numeric fields ===")
             try:
-                sale_price = float(data['salePrice'])
-                sale_tax = float(data['saleTax'])
-                amount_remitted = float(data['amountRemittedToOwner'])
+                # Convert strings to float and round to 2 decimal places
+                print("Converting string values to floats...")
                 
+                try:
+                    sale_price = float(data['salePrice'])
+                    print(f"Converted sale price: {sale_price}")
+                except ValueError as e:
+                    print(f"Error converting sale price: {e}")
+                    return render_template('add_sale.html', 
+                        error="❌ Invalid sale price format",
+                        form_data=data)
+
+                try:
+                    sale_tax = float(data['saleTax'])
+                    print(f"Converted sale tax: {sale_tax}")
+                except ValueError as e:
+                    print(f"Error converting sale tax: {e}")
+                    return render_template('add_sale.html', 
+                        error="❌ Invalid sale tax format",
+                        form_data=data)
+
+                try:
+                    amount_remitted = float(data['amountRemittedToOwner'])
+                    print(f"Converted amount remitted: {amount_remitted}")
+                except ValueError as e:
+                    print(f"Error converting amount remitted: {e}")
+                    return render_template('add_sale.html', 
+                        error="❌ Invalid amount remitted format",
+                        form_data=data)
+
+                # Format to exactly 2 decimal places
+                print("\nFormatting to exact decimal places...")
+                sale_price = float('{:.2f}'.format(sale_price))
+                sale_tax = float('{:.2f}'.format(sale_tax))
+                amount_remitted = float('{:.2f}'.format(amount_remitted))
+
+                print(f"Formatted values:")
+                print(f"Sale price: {sale_price} (type: {type(sale_price)})")
+                print(f"Sale tax: {sale_tax} (type: {type(sale_tax)})")
+                print(f"Amount remitted: {amount_remitted} (type: {type(amount_remitted)})")
+
+                # Additional validations
                 if sale_price <= 0:
                     return render_template('add_sale.html', 
                         error="❌ Sale price must be greater than zero",
@@ -742,150 +861,56 @@ def add_sale():
                     return render_template('add_sale.html', 
                         error="❌ Amount remitted to owner cannot be greater than or equal to sale price",
                         form_data=data)
+
+                print("\n=== Step 6: Preparing for database insertion ===")
+                print("Converting numeric values to strings with exact precision...")
                 
-            except ValueError:
-                return render_template('add_sale.html', 
-                    error="❌ Please enter valid numbers for price, tax, and remitted amount",
-                    form_data=data)
+                # Convert to strings with exact precision for database
+                sale_price_str = "{:.2f}".format(sale_price)
+                sale_tax_str = "{:.2f}".format(sale_tax)
+                amount_remitted_str = "{:.2f}".format(amount_remitted)
 
-            # Validate phone numbers and ZIP codes
-            if not (data['buyerAreaCode'].isdigit() and len(data['buyerAreaCode']) == 3):
-                return render_template('add_sale.html', 
-                    error="❌ Buyer area code must be exactly 3 digits",
-                    form_data=data)
-            
-            if not (data['buyerPhoneNumber'].isdigit() and len(data['buyerPhoneNumber']) == 7):
-                return render_template('add_sale.html', 
-                    error="❌ Buyer phone number must be exactly 7 digits",
-                    form_data=data)
-            
-            if not (data['buyerZip'].isdigit() and len(data['buyerZip']) == 5):
-                return render_template('add_sale.html', 
-                    error="❌ Buyer ZIP code must be exactly 5 digits",
-                    form_data=data)
+                print(f"Database-ready values:")
+                print(f"Sale price string: '{sale_price_str}'")
+                print(f"Sale tax string: '{sale_tax_str}'")
+                print(f"Amount remitted string: '{amount_remitted_str}'")
 
-            # Validate SSN format
-            if not (data['salespersonSSN'].isdigit() and len(data['salespersonSSN']) == 9):
-                return render_template('add_sale.html', 
-                    error="❌ Salesperson SSN must be exactly 9 digits",
-                    form_data=data)
-
-            conn = get_connection()
-            cur = conn.cursor()
-
-            # Lookup artwork ID from title and artist name
-            print(f"DEBUG: Looking for artwork: '{data['artworkTitle']}' by {data['artistFirstName']} {data['artistLastName']}")
-            
-            cur.execute("""
-                SELECT A.artworkId, A.askingPrice
-                FROM Artwork A
-                JOIN Artist R ON A.artistId = R.artistId
-                WHERE LOWER(A.workTitle) = LOWER(:title)
-                  AND LOWER(R.firstName) = LOWER(:firstName)
-                  AND LOWER(R.lastName) = LOWER(:lastName)
-            """, {
-                'title': data['artworkTitle'],
-                'firstName': data['artistFirstName'],
-                'lastName': data['artistLastName']
-            })
-            artwork_row = cur.fetchone()
-
-            if not artwork_row:
-                return render_template('add_sale.html', 
-                    error="❌ Artwork not found. Please verify the title and artist name.",
-                    form_data=data)
-
-            artwork_id = artwork_row[0]
-            asking_price = float(artwork_row[1])
-
-            # Check if artwork is already sold
-            cur.execute("""
-                SELECT S.invoiceNumber, S.saleDate
-                FROM Sale S
-                WHERE S.artworkId = :artworkId
-            """, {'artworkId': artwork_id})
-            
-            existing_sale = cur.fetchone()
-            if existing_sale:
-                return render_template('add_sale.html', 
-                    error=f"❌ This artwork has already been sold (Invoice #{existing_sale[0]} on {existing_sale[1].strftime('%Y-%m-%d')})",
-                    form_data=data)
-
-            # Validate sale price against asking price
-            if sale_price < (0.9 * asking_price):
-                return render_template('add_sale.html', 
-                    error=f"❌ Sale price (${sale_price}) cannot be less than 90% of asking price (${asking_price})",
-                    form_data=data)
-
-            # Look for existing collector (buyer)
-            cur.execute("""
-                SELECT socialSecurityNumber, firstName, lastName, street, zip 
-                FROM Collector
-                WHERE LOWER(firstName) = LOWER(:firstName)
-                  AND LOWER(lastName) = LOWER(:lastName)
-                  AND LOWER(street) = LOWER(:street)
-                  AND zip = :zip
-            """, {
-                'firstName': data['buyerFirstName'],
-                'lastName': data['buyerLastName'],
-                'street': data['buyerStreet'],
-                'zip': data['buyerZip']
-            })
-            collector = cur.fetchone()
-            
-            if not collector:
-                # Redirect to collector registration with pre-filled data
-                session['sale_form_data'] = data
-                return redirect(url_for('add_collector', 
-                    firstName=data['buyerFirstName'],
-                    lastName=data['buyerLastName'],
-                    street=data['buyerStreet'],
-                    zip=data['buyerZip'],
-                    areaCode=data['buyerAreaCode'],
-                    telephoneNumber=data['buyerPhoneNumber'],
-                    next='add_sale'))
-
-            collector_ssn = collector[0]
-
-            # Verify salesperson exists
-            cur.execute("""
-                SELECT COUNT(*) 
-                FROM Salesperson 
-                WHERE socialSecurityNumber = :ssn
-            """, {'ssn': data['salespersonSSN']})
-            
-            if cur.fetchone()[0] == 0:
-                return render_template('add_sale.html', 
-                    error="❌ Salesperson not found. Please verify the SSN.",
-                    form_data=data)
-
-            # Insert into Sale table
-            try:
+                # Create a variable for the returning invoice number
                 invoice_var = cur.var(int)
-                cur.execute("""
+
+                print("\n=== Step 7: Executing database insertion ===")
+                # Insert into Sale table
+                insert_query = """
                     INSERT INTO Sale (
-                        invoiceNumber, artworkId, amountRemittedToOwner,
-                        saleDate, salePrice, saleTax,
-                            collectorSocialSecurityNumber, salespersonSSN
+                        INVOICENUMBER, ARTWORKID, AMOUNTREMITTEDTOOWNER,
+                        SALEDATE, SALEPRICE, SALETAX, BUYERID, SALESPERSONSSN
                     ) VALUES (
                         SALEID_SEQUENCE.NEXTVAL, :artworkId, :amountRemittedToOwner,
                         TO_DATE(:saleDate, 'YYYY-MM-DD'), :salePrice, :saleTax,
-                            :collectorSocialSecurityNumber, :salespersonSSN
-                        ) RETURNING invoiceNumber INTO :invoice_number
-                """, {
+                        :buyerSSN, :salespersonSSN
+                    ) RETURNING INVOICENUMBER INTO :invoice_number
+                """
+                
+                print("Executing INSERT with parameters:")
+                insert_params = {
                     'artworkId': artwork_id,
-                    'amountRemittedToOwner': amount_remitted,
+                    'amountRemittedToOwner': amount_remitted_str,
                     'saleDate': data['saleDate'],
-                    'salePrice': sale_price,
-                    'saleTax': sale_tax,
-                    'collectorSocialSecurityNumber': collector_ssn,
+                    'salePrice': sale_price_str,
+                    'saleTax': sale_tax_str,
                     'salespersonSSN': data['salespersonSSN'],
+                    'buyerSSN': buyer_ssn,
                     'invoice_number': invoice_var
-                })
-
+                }
+                print("Parameters:", insert_params)
+                
+                cur.execute(insert_query, insert_params)
+                
                 invoice_number = invoice_var.getvalue()[0]
+                print(f"Sale recorded successfully with invoice number: {invoice_number}")
 
                 # Update artwork status to 'Sold'
+                print("\nUpdating artwork status to 'Sold'")
                 cur.execute("""
                     UPDATE Artwork
                     SET status = 'Sold'
@@ -893,6 +918,7 @@ def add_sale():
                 """, {'artwork_id': artwork_id})
 
                 conn.commit()
+                print("Transaction committed successfully")
                 
                 # Clear session data after successful sale
                 session.pop('sale_form_data', None)
@@ -901,40 +927,34 @@ def add_sale():
                     success=True,
                     message=f"✅ Sale completed successfully! Invoice number: {invoice_number}")
 
-            except oracledb.IntegrityError as e:
-                conn.rollback()
+            except oracledb.DatabaseError as e:
                 error_msg = str(e)
-                if "SALE_ARTWORK_UK" in error_msg:
-                    error = "❌ This artwork has already been sold. Each artwork can only be sold once."
-                else:
-                    error = f"❌ Database error: {error_msg}"
-                return render_template('add_sale.html', error=error, form_data=data)
-
-        except oracledb.DatabaseError as e:
-            if conn:
-                conn.rollback()
-            error_msg = str(e)
-            print(f"Database Error: {error_msg}")
-            
-            if "SALE_SALESPERSONSSN_FK" in error_msg:
-                error = "❌ Salesperson SSN not found in the system. Please enter a valid SSN."
-            elif "ORA-12899" in error_msg:
-                error = "❌ One or more inputs exceed the allowed length. Please shorten your entries."
-            elif "ORA-01722" in error_msg:
-                error = "❌ Please make sure all numeric fields (Price, Tax, Remitted Amount) are valid numbers."
-            elif "ORA-01400" in error_msg:
-                error = "❌ A required field is missing. Please fill out all fields marked with a red asterisk."
-            else:
-                error = f"❌ Database Error: {error_msg}"
-
-            return render_template('add_sale.html', error=error, form_data=data)
+                print(f"\n=== Database Error Details ===")
+                print(f"Error message: {error_msg}")
+                print(f"Error code: {e.code if hasattr(e, 'code') else 'Unknown'}")
+                print(f"Error offset: {e.offset if hasattr(e, 'offset') else 'Unknown'}")
+                
+                if "ORA-01438" in error_msg:
+                    print("\nPrecision error details:")
+                    print(f"Sale price: {sale_price_str if 'sale_price_str' in locals() else 'Not converted'}")
+                    print(f"Sale tax: {sale_tax_str if 'sale_tax_str' in locals() else 'Not converted'}")
+                    print(f"Amount remitted: {amount_remitted_str if 'amount_remitted_str' in locals() else 'Not converted'}")
+                
+                if conn:
+                    conn.rollback()
+                return render_template('add_sale.html', error=f"❌ Database Error: {error_msg}", form_data=data)
 
         except Exception as e:
+            print(f"\n=== Unexpected Error ===")
+            print(f"Error type: {type(e)}")
+            print(f"Error message: {str(e)}")
+            import traceback
+            print("Traceback:")
+            print(traceback.format_exc())
             if conn:
                 conn.rollback()
-            print(f"Unexpected Error: {str(e)}")
             return render_template('add_sale.html',
-                error="❌ An unexpected error occurred. Please try again.",
+                error=f"❌ An unexpected error occurred: {str(e)}",
                 form_data=data)
 
         finally:
@@ -942,9 +962,12 @@ def add_sale():
                 cur.close()
             if conn:
                 conn.close()
+            print("\n=== Request processing completed ===")
 
     # When loading the form (GET request)
+    print("Processing GET request")
     form_data = session.get('sale_form_data', {})
+    print("Retrieved form data from session:", form_data)
     return render_template('add_sale.html', form_data=form_data)
 
 
