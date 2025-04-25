@@ -744,14 +744,27 @@ def add_sale():
             print("\n=== Step 2: Looking up artwork ===")
             print(f"Searching for artwork: '{data['artworkTitle']}' by {data['artistFirstName']} {data['artistLastName']}")
             
-            # Lookup artwork ID from title and artist name
+            # First, let's see what artworks exist with similar titles
+            cur.execute("""
+                SELECT A.artworkId, A.workTitle, A.status, R.firstName, R.lastName
+                FROM Artwork A
+                JOIN Artist R ON A.artistId = R.artistId
+                WHERE LOWER(A.workTitle) LIKE LOWER(:title) || '%'
+            """, {'title': data['artworkTitle']})
+            
+            similar_artworks = cur.fetchall()
+            print("\nArtworks with similar titles:")
+            for artwork in similar_artworks:
+                print(f"ID: {artwork[0]}, Title: {artwork[1]}, Status: {artwork[2]}, Artist: {artwork[3]} {artwork[4]}")
+            
+            # Now try the exact match
             cur.execute("""
                 SELECT A.artworkId, A.askingPrice
                 FROM Artwork A
                 JOIN Artist R ON A.artistId = R.artistId
-                WHERE LOWER(A.workTitle) = LOWER(:title)
-                  AND LOWER(R.firstName) = LOWER(:firstName)
-                  AND LOWER(R.lastName) = LOWER(:lastName)
+                WHERE TRIM(LOWER(A.workTitle)) = TRIM(LOWER(:title))
+                  AND TRIM(LOWER(R.firstName)) = TRIM(LOWER(:firstName))
+                  AND TRIM(LOWER(R.lastName)) = TRIM(LOWER(:lastName))
             """, {
                 'title': data['artworkTitle'],
                 'firstName': data['artistFirstName'],
@@ -1327,9 +1340,9 @@ def add_collector():
                 form_data=data)
 
         finally:
-            if 'cur' in locals() and cur:
+            if cur:
                 cur.close()
-            if 'conn' in locals() and conn:
+            if conn:
                 conn.close()
             print("DEBUG: Database connection closed")  # Debug log
 
@@ -1482,157 +1495,256 @@ def change_password():
 @app.route('/add_buyer', methods=['GET', 'POST'])
 @login_required
 def add_buyer():
-    if request.method == 'POST':
-        conn = None
-        cur = None
-        try:
-            print("DEBUG: Starting buyer form processing")
-            print("DEBUG: Received form data:", request.form)
-            
-            # Get form data with correct field names from the form
-            data = {
-                'FIRSTNAME': request.form.get('FIRSTNAME', '').strip(),
-                'LASTNAME': request.form.get('LASTNAME', '').strip(),
-                'STREET': request.form.get('STREET', '').strip(),
-                'ZIP': request.form.get('ZIP', '').strip(),
-                'ARE': request.form.get('ARE', '').strip(),
-                'TELEPHO': request.form.get('TELEPHO', '').strip()
-            }
-            
-            # Store city and state in form_data for display purposes only
-            form_data = {
-                **data,
-                'CITY': request.form.get('CITY', '').strip(),
-                'STATE': request.form.get('STATE', '').strip()
-            }
-            
-            print("DEBUG: Collected form data:", form_data)
+    print("DEBUG: Entering add_buyer route")
+    try:
+        if request.method == 'POST':
+            print("DEBUG: Processing POST request")
+            conn = None
+            cur = None
+            try:
+                print("DEBUG: Starting buyer form processing")
+                print("DEBUG: Received form data:", request.form)
+                
+                # Get form data with correct field names from the form
+                data = {
+                    'FIRSTNAME': request.form.get('FIRSTNAME', '').strip(),
+                    'LASTNAME': request.form.get('LASTNAME', '').strip(),
+                    'STREET': request.form.get('STREET', '').strip(),
+                    'ZIP': request.form.get('ZIP', '').strip(),
+                    'ARE': request.form.get('ARE', '').strip(),
+                    'TELEPHO': request.form.get('TELEPHO', '').strip()
+                }
+                
+                # Store city and state in form_data for display purposes only
+                form_data = {
+                    **data,
+                    'CITY': request.form.get('CITY', '').strip(),
+                    'STATE': request.form.get('STATE', '').strip()
+                }
+                
+                print("DEBUG: Collected form data:", form_data)
 
-            # Validate required fields
-            required_fields = ['FIRSTNAME', 'LASTNAME', 'STREET', 'CITY', 'STATE', 
-                             'ZIP', 'ARE', 'TELEPHO']
-            
-            missing_fields = [field for field in required_fields if not form_data[field]]
-            if missing_fields:
-                print("DEBUG: Missing fields:", missing_fields)
-                return render_template('add_buyer.html', 
-                    error=f"❌ Required fields missing: {', '.join(missing_fields)}",
-                    form_data=form_data)
+                # Validate required fields
+                required_fields = ['FIRSTNAME', 'LASTNAME', 'STREET', 'CITY', 'STATE', 
+                                 'ZIP', 'ARE', 'TELEPHO']
+                
+                missing_fields = [field for field in required_fields if not form_data[field]]
+                if missing_fields:
+                    print("DEBUG: Missing fields:", missing_fields)
+                    return render_template('add_buyer.html', 
+                        error=f"❌ Required fields missing: {', '.join(missing_fields)}",
+                        form_data=form_data)
 
-            # Validate field lengths
-            if len(data['FIRSTNAME']) > 15:
-                return render_template('add_buyer.html', 
-                    error="❌ First name must not exceed 15 characters",
-                    form_data=form_data)
-            if len(data['LASTNAME']) > 15:
-                return render_template('add_buyer.html', 
-                    error="❌ Last name must not exceed 15 characters",
-                    form_data=form_data)
-            if len(data['STREET']) > 30:
-                return render_template('add_buyer.html', 
-                    error="❌ Street address must not exceed 30 characters",
-                    form_data=form_data)
+                # Validate field lengths
+                if len(data['FIRSTNAME']) > 15:
+                    return render_template('add_buyer.html', 
+                        error="❌ First name must not exceed 15 characters",
+                        form_data=form_data)
+                if len(data['LASTNAME']) > 15:
+                    return render_template('add_buyer.html', 
+                        error="❌ Last name must not exceed 15 characters",
+                        form_data=form_data)
+                if len(data['STREET']) > 30:
+                    return render_template('add_buyer.html', 
+                        error="❌ Street address must not exceed 30 characters",
+                        form_data=form_data)
 
-            # Validate ZIP code
-            if not data['ZIP'].isdigit() or len(data['ZIP']) != 5:
-                return render_template('add_buyer.html', 
-                    error="❌ ZIP code must be exactly 5 digits",
-                    form_data=form_data)
+                # Validate ZIP code
+                if not data['ZIP'].isdigit() or len(data['ZIP']) != 5:
+                    return render_template('add_buyer.html', 
+                        error="❌ ZIP code must be exactly 5 digits",
+                        form_data=form_data)
 
-            # Validate phone number
-            if not data['ARE'].isdigit() or len(data['ARE']) != 3:
-                return render_template('add_buyer.html', 
-                    error="❌ Area code must be exactly 3 digits",
-                    form_data=form_data)
-            if not data['TELEPHO'].isdigit() or len(data['TELEPHO']) != 7:
-                return render_template('add_buyer.html', 
-                    error="❌ Phone number must be exactly 7 digits",
-                    form_data=form_data)
+                # Validate phone number
+                if not data['ARE'].isdigit() or len(data['ARE']) != 3:
+                    return render_template('add_buyer.html', 
+                        error="❌ Area code must be exactly 3 digits",
+                        form_data=form_data)
+                if not data['TELEPHO'].isdigit() or len(data['TELEPHO']) != 7:
+                    return render_template('add_buyer.html', 
+                        error="❌ Phone number must be exactly 7 digits",
+                        form_data=form_data)
 
-            conn = get_connection()
-            cur = conn.cursor()
+                conn = get_connection()
+                cur = conn.cursor()
 
-            # Check if buyer already exists
-            cur.execute("""
-                SELECT COUNT(*) 
-                FROM Buyer 
-                WHERE LOWER(FIRSTNAME) = LOWER(:FIRSTNAME)
-                AND LOWER(LASTNAME) = LOWER(:LASTNAME)
-                AND LOWER(STREET) = LOWER(:STREET)
-                AND ZIP = :ZIP
-            """, {
-                'FIRSTNAME': data['FIRSTNAME'],
-                'LASTNAME': data['LASTNAME'],
-                'STREET': data['STREET'],
-                'ZIP': data['ZIP']
-            })
-            
-            if cur.fetchone()[0] > 0:
-                return render_template('add_buyer.html', 
-                    error="❌ A buyer with this name and address already exists",
-                    form_data=form_data)
+                # Check if buyer already exists
+                cur.execute("""
+                    SELECT COUNT(*) 
+                    FROM Buyer 
+                    WHERE LOWER(FIRSTNAME) = LOWER(:FIRSTNAME)
+                    AND LOWER(LASTNAME) = LOWER(:LASTNAME)
+                    AND LOWER(STREET) = LOWER(:STREET)
+                    AND ZIP = :ZIP
+                """, {
+                    'FIRSTNAME': data['FIRSTNAME'],
+                    'LASTNAME': data['LASTNAME'],
+                    'STREET': data['STREET'],
+                    'ZIP': data['ZIP']
+                })
+                
+                if cur.fetchone()[0] > 0:
+                    return render_template('add_buyer.html', 
+                        error="❌ A buyer with this name and address already exists",
+                        form_data=form_data)
 
-            # Insert new buyer with correct column names
-            cur.execute("""
-                INSERT INTO Buyer (
-                    BUYERID, FIRSTNAME, LASTNAME, STREET, ZIP,
-                    AREACODE, TELEPHONENUMBER, PURCHASESLASTYEAR, PURCHASESYEARTODATE
-                ) VALUES (
-                    buyerId_sequence.NEXTVAL, :FIRSTNAME, :LASTNAME, :STREET, :ZIP,
-                    :AREACODE, :TELEPHONENUMBER, 0, 0
-                )
-            """, {
-                'FIRSTNAME': data['FIRSTNAME'],
-                'LASTNAME': data['LASTNAME'],
-                'STREET': data['STREET'],
-                'ZIP': data['ZIP'],
-                'AREACODE': data['ARE'],
-                'TELEPHONENUMBER': data['TELEPHO']
-            })
+                # Insert new buyer with correct column names
+                cur.execute("""
+                    INSERT INTO Buyer (
+                        BUYERID, FIRSTNAME, LASTNAME, STREET, ZIP,
+                        AREACODE, TELEPHONENUMBER, PURCHASESLASTYEAR, PURCHASESYEARTODATE
+                    ) VALUES (
+                        buyerId_sequence.NEXTVAL, :FIRSTNAME, :LASTNAME, :STREET, :ZIP,
+                        :AREACODE, :TELEPHONENUMBER, 0, 0
+                    )
+                """, {
+                    'FIRSTNAME': data['FIRSTNAME'],
+                    'LASTNAME': data['LASTNAME'],
+                    'STREET': data['STREET'],
+                    'ZIP': data['ZIP'],
+                    'AREACODE': data['ARE'],
+                    'TELEPHONENUMBER': data['TELEPHO']
+                })
 
-            conn.commit()
-            return render_template('add_buyer.html', success=True)
+                conn.commit()
+                return render_template('add_buyer.html', success=True)
 
-        except oracledb.DatabaseError as e:
-            error_msg = str(e)
-            print(f"DEBUG: Database error: {error_msg}")
-            
-            if "ORA-02291" in error_msg:
-                error = "❌ Invalid ZIP code. Please enter a valid U.S. ZIP code."
-            elif "ORA-12899" in error_msg:
-                if "FIRSTNAME" in error_msg:
-                    error = "❌ First name is too long (maximum 15 characters)"
-                elif "LASTNAME" in error_msg:
-                    error = "❌ Last name is too long (maximum 15 characters)"
-                elif "STREET" in error_msg:
-                    error = "❌ Street address is too long (maximum 30 characters)"
-                elif "ZIP" in error_msg:
-                    error = "❌ ZIP code must be exactly 5 digits"
+            except oracledb.DatabaseError as e:
+                error_msg = str(e)
+                print(f"DEBUG: Database error: {error_msg}")
+                
+                if "ORA-02291" in error_msg:
+                    error = "❌ Invalid ZIP code. Please enter a valid U.S. ZIP code."
+                elif "ORA-12899" in error_msg:
+                    if "FIRSTNAME" in error_msg:
+                        error = "❌ First name is too long (maximum 15 characters)"
+                    elif "LASTNAME" in error_msg:
+                        error = "❌ Last name is too long (maximum 15 characters)"
+                    elif "STREET" in error_msg:
+                        error = "❌ Street address is too long (maximum 30 characters)"
+                    elif "ZIP" in error_msg:
+                        error = "❌ ZIP code must be exactly 5 digits"
+                    else:
+                        error = "❌ One or more fields exceed their maximum length"
                 else:
-                    error = "❌ One or more fields exceed their maximum length"
-            else:
-                error = f"❌ Database Error: {error_msg}"
+                    error = f"❌ Database Error: {error_msg}"
 
-            if conn:
-                conn.rollback()
-            return render_template('add_buyer.html', error=error, form_data=form_data)
+                if conn:
+                    conn.rollback()
+                return render_template('add_buyer.html', error=error, form_data=form_data)
 
-        except Exception as e:
-            print(f"DEBUG: Unexpected error: {str(e)}")
-            if conn:
-                conn.rollback()
-            return render_template('add_buyer.html', 
-                error=f"❌ An unexpected error occurred: {str(e)}",
-                form_data=form_data)
+            except Exception as e:
+                print(f"DEBUG: Unexpected error: {str(e)}")
+                if conn:
+                    conn.rollback()
+                return render_template('add_buyer.html', 
+                    error=f"❌ An unexpected error occurred: {str(e)}",
+                    form_data=form_data)
 
-        finally:
-            if cur:
-                cur.close()
-            if conn:
-                conn.close()
-            print("DEBUG: Database connection closed")
+        else:
+            print("DEBUG: Processing GET request")
+        
+        print("DEBUG: Attempting to render template")
+        return render_template('add_buyer.html')
+    except Exception as e:
+        print(f"DEBUG: Critical error in route: {str(e)}")
+        return f"An error occurred: {str(e)}", 500
 
-    return render_template('add_buyer.html')
+def create_boost_buyer_trigger():
+    """Create the boostBuyer trigger if it doesn't exist"""
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # Check if trigger exists
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM user_triggers 
+            WHERE trigger_name = 'BOOSTBUYER'
+        """)
+        
+        if cursor.fetchone()[0] == 0:
+            # Create the trigger
+            cursor.execute("""
+                CREATE OR REPLACE TRIGGER boostBuyer
+                AFTER INSERT ON Sale
+                FOR EACH ROW
+                BEGIN
+                  UPDATE Buyer
+                  SET PURCHASESYEARTODATE = 
+                    CASE 
+                      WHEN PURCHASESYEARTODATE IS NULL THEN :NEW.salePrice
+                      ELSE PURCHASESYEARTODATE + :NEW.salePrice
+                    END
+                  WHERE buyerId = :NEW.buyerId;
+                END;
+            """)
+            
+            conn.commit()
+            print("boostBuyer trigger created successfully")
+    except Exception as e:
+        print(f"Error creating boostBuyer trigger: {str(e)}")
+        if conn:
+            conn.rollback()
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def create_artist_sales_trigger():
+    """Create the updateArtistSales trigger if it doesn't exist"""
+    conn = None
+    cursor = None
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # Check if trigger exists
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM user_triggers 
+            WHERE trigger_name = 'UPDATEARTISTSALES'
+        """)
+        
+        if cursor.fetchone()[0] == 0:
+            # Create the trigger
+            cursor.execute("""
+                CREATE OR REPLACE TRIGGER updateArtistSales
+                AFTER INSERT ON Sale
+                FOR EACH ROW
+                BEGIN
+                  UPDATE Artist a
+                  SET a.salesYearToDate = 
+                    CASE 
+                      WHEN a.salesYearToDate IS NULL THEN :NEW.salePrice
+                      ELSE a.salesYearToDate + :NEW.salePrice
+                    END
+                  WHERE a.artistId = (
+                    SELECT artwork.artistId 
+                    FROM Artwork artwork 
+                    WHERE artwork.artworkId = :NEW.artworkId
+                  );
+                END;
+            """)
+            
+            conn.commit()
+            print("updateArtistSales trigger created successfully")
+    except Exception as e:
+        print(f"Error creating updateArtistSales trigger: {str(e)}")
+        if conn:
+            conn.rollback()
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+# Create triggers when app starts
+create_boost_buyer_trigger()
+create_artist_sales_trigger()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)

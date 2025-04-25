@@ -594,7 +594,12 @@
                                 <label class="form-label required-field">
                                     <i class="fas fa-calendar-day"></i> Today's Date
                                 </label>
-                                <input type="date" class="form-control" name="signupDate" value="{{ request.form.signupDate }}" required>
+                                <input type="date" class="form-control" name="signupDate" 
+                                       value="{{ request.form.signupDate }}" 
+                                       id="signupDate"
+                                       required>
+                                <div class="invalid-feedback">Please select a date</div>
+                                <div class="form-text">Date cannot be in the future</div>
                             </div>
                         </div>
                     </div>
@@ -905,6 +910,10 @@
                     }
                 });
             });
+
+            // Set max date to today for signup date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('signupDate').max = today;
         });
 
         function toggleFormsMenu(button) {

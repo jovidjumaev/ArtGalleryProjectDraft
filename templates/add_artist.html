@@ -569,9 +569,9 @@
                                 </label>
                                 <input type="date" class="form-control" name="interviewDate" 
                                        value="{{ request.form.interviewDate }}" 
-                                       max="2025-04-28"
+                                       id="interviewDate"
                                        required>
-                                <div class="form-text">Date cannot be after April 28th, 2025</div>
+                                <div class="form-text">Date cannot be in the future</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label required-field">
@@ -943,6 +943,10 @@
                     });
                 }
             });
+
+            // Set max date to today for interview date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('interviewDate').max = today;
         });
     </script>
 </body>

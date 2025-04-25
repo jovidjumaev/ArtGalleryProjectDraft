@@ -700,13 +700,13 @@
                     <!-- Buyer Information -->
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h5><i class="fas fa-user"></i> Collector (Buyer) Information</h5>
-                            <p class="text-muted small">If the collector is not found, you will be redirected to register them.</p>
+                            <h5><i class="fas fa-user"></i> Buyer Information</h5>
+                            <p class="text-muted small">If the buyer is not found, you will be redirected to register them.</p>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">
                                         <i class="fas fa-user"></i> Buyer Last Name
-                                        <span class="text-danger">*</span>
+                                        <span style="color: var(--accent-color)">*</span>
                                     </label>
                                     <input type="text" class="form-control" name="buyerLastName"
                                            value="{{ form_data.get('buyerLastName', '') }}"
@@ -719,7 +719,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label">
                                         <i class="fas fa-user"></i> Buyer First Name
-                                        <span class="text-danger">*</span>
+                                        <span style="color: var(--accent-color)">*</span>
                                     </label>
                                     <input type="text" class="form-control" name="buyerFirstName"
                                            value="{{ form_data.get('buyerFirstName', '') }}"
@@ -730,38 +730,38 @@
                                     <div class="form-text">Letters only, max 15 characters</div>
                                 </div>
                                 <div class="col-12">
-                                    <label class="form-label">Street Address <span class="text-danger">*</span></label>
+                                    <label class="form-label">Street Address <span style="color: var(--accent-color)">*</span></label>
                                     <input type="text" class="form-control" name="buyerStreet" 
                                         value="{{ form_data.get('buyerStreet', '') }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">City <span class="text-danger">*</span></label>
+                                    <label class="form-label">City <span style="color: var(--accent-color)">*</span></label>
                                     <input type="text" class="form-control" name="buyerCity" 
                                         value="{{ form_data.get('buyerCity', '') }}" required>
                                 </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">State <span class="text-danger">*</span></label>
+                                <div class="col-md-4">
+                                    <label class="form-label">State <span style="color: var(--accent-color)">*</span></label>
                                     <input type="text" class="form-control" name="buyerState"
                                         value="{{ form_data.get('buyerState', '') }}"
                                         maxlength="2" pattern="[A-Z]{2}" required>
                                     <div class="form-text">2 capital letters</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">ZIP Code <span class="text-danger">*</span></label>
+                                    <label class="form-label">ZIP Code <span style="color: var(--accent-color)">*</span></label>
                                     <input type="text" class="form-control" name="buyerZip"
                                         value="{{ form_data.get('buyerZip', '') }}"
                                         maxlength="5" pattern="[0-9]{5}" required>
                                     <div class="form-text">5 digits</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Area Code <span class="text-danger">*</span></label>
+                                    <label class="form-label">Area Code <span style="color: var(--accent-color)">*</span></label>
                                     <input type="text" class="form-control" name="buyerAreaCode"
                                         value="{{ form_data.get('buyerAreaCode', '') }}"
                                         maxlength="3" pattern="[0-9]{3}" required>
                                     <div class="form-text">3 digits</div>
                                 </div>
                                 <div class="col-md-8">
-                                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                    <label class="form-label">Phone Number <span style="color: var(--accent-color)">*</span></label>
                                     <input type="text" class="form-control" name="buyerPhoneNumber"
                                         value="{{ form_data.get('buyerPhoneNumber', '') }}"
                                         maxlength="7" pattern="[0-9]{7}" required>
@@ -824,8 +824,11 @@
                                     <i class="fas fa-calendar"></i> Sale Date
                                 </label>
                                 <input type="date" class="form-control" name="saleDate" 
-                                       value="{{ form_data.get('saleDate', '') }}" required>
-                                <div class="form-text">Date of sale</div>
+                                       value="{{ form_data.get('saleDate', '') }}" 
+                                       id="saleDate"
+                                       required>
+                                <div class="invalid-feedback">Please select a date</div>
+                                <div class="form-text">Date cannot be in the future</div>
                             </div>
                         </div>
                     </div>
@@ -989,6 +992,10 @@
                     field.addEventListener('blur', validateOwnerFields);
                 });
             }
+
+            // Set max date to today for sale date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('saleDate').max = today;
         });
 
         function toggleFormsMenu(button) {

@@ -559,7 +559,12 @@
                                 <label class="form-label required-field">
                                     <i class="fas fa-calendar-day"></i> Date of Interview
                                 </label>
-                                <input type="date" class="form-control" name="interviewDate" value="{{ request.form.interviewDate }}" required>
+                                <input type="date" class="form-control" name="interviewDate" 
+                                       value="{{ request.form.interviewDate }}" 
+                                       id="interviewDate"
+                                       required>
+                                <div class="invalid-feedback">Please select a date</div>
+                                <div class="form-text">Date cannot be in the future</div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label required-field">
@@ -878,6 +883,10 @@
                     this.classList.add('is-invalid');
                 }
             });
+
+            // Set max date to today for interview date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('interviewDate').max = today;
         });
 
         // Remove any click-based JavaScript for user menu

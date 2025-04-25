@@ -927,10 +927,11 @@
                                     </label>
                                     <input type="date" class="form-control gallery-field" name="dateListed" 
                                            value="{{ request.form.dateListed }}" 
+                                           id="dateListed"
                                            data-required="true"
                                            required>
                                     <div class="invalid-feedback">Please select a date</div>
-                                    <div class="form-text">Required field</div>
+                                    <div class="form-text">Date cannot be in the future</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label required-field">
@@ -1320,6 +1321,14 @@
                     }
                 });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set max date to today for date listed
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateListed').max = today;
+            
+            // Rest of your existing JavaScript code...
         });
     </script>
 </body>
