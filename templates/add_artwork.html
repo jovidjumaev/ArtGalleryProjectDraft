@@ -618,6 +618,10 @@
                                     <i class="fas fa-star"></i>
                                     Add Collector
                                 </a>
+                                <a href="/add_buyer" class="form-menu-item">
+                                    <i class="fas fa-user-plus"></i>
+                                    Register as Buyer
+                                </a>
                                 <a href="/add_mailing_list" class="form-menu-item">
                                     <i class="fas fa-envelope"></i>
                                     Join Mailing
@@ -801,10 +805,10 @@
                         <!-- Owner Information -->
                         <div class="form-section">
                             <h5><i class="fas fa-user-tie"></i> Owner Information</h5>
-                            <p class="text-muted mb-4">Please provide the owner's SSN. Note: The SSN must belong to a registered collector in our database. If the owner is not yet registered, please add them first using the "Add Collector" form.</p>
+                            <p class="text-muted mb-4">Please provide the owner's SSN if the artwork is owned by a registered collector. Leave blank if owned by the artist.</p>
                             <div class="row g-3">
                                 <div class="col-12 mb-3">
-                                    <label class="form-label required-field">
+                                    <label class="form-label">
                                         <i class="fas fa-id-card"></i> Owner Social Security Number
                                     </label>
                                     <input type="text" class="form-control" name="ownerSSN" 
@@ -812,10 +816,9 @@
                                            maxlength="9"
                                            onkeypress="return /[0-9]/.test(event.key)"
                                            pattern="[0-9]{9}"
-                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                           required>
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     <div class="invalid-feedback">Please enter exactly 9 digits for SSN</div>
-                                    <div class="form-text">9 digits only (e.g., 123456789) - Must be a registered collector's SSN</div>
+                                    <div class="form-text">9 digits only (e.g., 123456789) - Leave blank if artwork is owned by the artist</div>
                                 </div>
                                 <div class="col-12">
                                     <p class="text-muted mb-4">If owned by someone other than the artist, please complete this section with the owner information:</p>
@@ -1164,7 +1167,7 @@
             }
 
             // Add validation for numeric fields
-            function setupNumericValidation(inputElement, requiredLength) {
+            function setupNumericValidation(inputElement, requiredLength, isRequired = true) {
                 if (!inputElement) return;
                 
                 inputElement.addEventListener('paste', function(e) {
@@ -1177,7 +1180,15 @@
                 });
 
                 inputElement.addEventListener('input', function() {
-                    if (this.value.length === requiredLength && this.value.match(new RegExp(`^[0-9]{${requiredLength}}$`))) {
+                    if (!this.value) {
+                        if (isRequired) {
+                            this.classList.add('is-invalid');
+                            this.classList.remove('is-valid');
+                        } else {
+                            this.classList.remove('is-invalid');
+                            this.classList.remove('is-valid');
+                        }
+                    } else if (this.value.length === requiredLength && this.value.match(new RegExp(`^[0-9]{${requiredLength}}$`))) {
                         this.classList.remove('is-invalid');
                         this.classList.add('is-valid');
                     } else {
@@ -1188,9 +1199,9 @@
             }
 
             // Setup validation for each numeric field
-            setupNumericValidation(document.querySelector('input[name="ownerAreaCode"]'), 3);
-            setupNumericValidation(document.querySelector('input[name="ownerPhoneNumber"]'), 7);
-            setupNumericValidation(document.querySelector('input[name="ownerSSN"]'), 9);
+            setupNumericValidation(document.querySelector('input[name="ownerAreaCode"]'), 3, false);
+            setupNumericValidation(document.querySelector('input[name="ownerPhoneNumber"]'), 7, false);
+            setupNumericValidation(document.querySelector('input[name="ownerSSN"]'), 9, false);
 
             const galleryInputs = document.querySelectorAll('.gallery-field');
             const form = document.querySelector('form');

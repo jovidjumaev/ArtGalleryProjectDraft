@@ -484,6 +484,10 @@
                                     <i class="fas fa-star"></i>
                                     Add Collector
                                 </a>
+                                <a href="/add_buyer" class="form-menu-item">
+                                    <i class="fas fa-user-plus"></i>
+                                    Register as Buyer
+                                </a>
                                 <a href="/add_mailing_list" class="form-menu-item">
                                     <i class="fas fa-envelope"></i>
                                     Join Mailing
@@ -536,6 +540,24 @@
                         <div>
                             <strong>Error!</strong>
                             <p class="mb-0">{{ error }}</p>
+                            {% if similar_matches %}
+                                <hr>
+                                <div class="similar-matches">
+                                    <h6 class="mb-3">Similar Records Found:</h6>
+                                    <ul class="list-unstyled">
+                                        {% for match in similar_matches %}
+                                            <li class="mb-2">
+                                                {% if match.type == 'name_match' %}
+                                                    <i class="fas fa-user text-warning me-2"></i>
+                                                {% elif match.type == 'zip_match' %}
+                                                    <i class="fas fa-map-marker-alt text-info me-2"></i>
+                                                {% endif %}
+                                                {{ match.message }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
@@ -550,10 +572,10 @@
                                     <i class="fas fa-tag"></i> Title of Artwork
                                 </label>
                                 <input type="text" class="form-control" name="artworkTitle" 
-                                       value="{{ request.form.artworkTitle }}"
+                                       value="{{ form_data.get('artworkTitle', '') }}"
                                        maxlength="30"
-                                       onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
+                                       pattern="[a-zA-Z\s'\-]*"
+                                       title="Only letters, spaces, hyphens, and apostrophes allowed"
                                        required>
                                 <div class="form-text">Maximum 30 characters, letters only</div>
                             </div>
@@ -562,8 +584,9 @@
                                     <i class="fas fa-user"></i> Artist Last Name
                                 </label>
                                 <input type="text" class="form-control" name="artistLastName" 
-                                       value="{{ form_data.artistLastName if form_data else '' }}"
-                                       pattern="[a-zA-Z\s\-']*"
+                                       value="{{ form_data.get('artistLastName', '') }}"
+                                       maxlength="15"
+                                       pattern="[a-zA-Z\s'\-]*"
                                        title="Only letters, spaces, hyphens, and apostrophes allowed"
                                        required>
                                 <div class="form-text">Maximum 15 characters, letters only</div>
@@ -573,8 +596,9 @@
                                     <i class="fas fa-user"></i> Artist First Name
                                 </label>
                                 <input type="text" class="form-control" name="artistFirstName" 
-                                       value="{{ form_data.artistFirstName if form_data else '' }}"
-                                       pattern="[a-zA-Z\s\-']*"
+                                       value="{{ form_data.get('artistFirstName', '') }}"
+                                       maxlength="15"
+                                       pattern="[a-zA-Z\s'\-]*"
                                        title="Only letters, spaces, hyphens, and apostrophes allowed"
                                        required>
                                 <div class="form-text">Maximum 15 characters, letters only</div>
@@ -585,94 +609,89 @@
                     <!-- Owner Information -->
                     <div class="form-section">
                         <h5><i class="fas fa-user-tie"></i> Owner Information</h5>
+                        <p class="text-muted mb-4">Please provide the owner's information if the artwork is owned by a registered collector. Leave blank if the artwork is owned by the artist.</p>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-user"></i> Owner Last Name
                                 </label>
                                 <input type="text" class="form-control" name="ownerLastName" 
-                                       value="{{ request.form.ownerLastName }}"
+                                       value="{{ form_data.get('ownerLastName', '') }}"
                                        maxlength="15"
                                        onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
-                                       required>
+                                       pattern="[a-zA-Z\s-']*">
                                 <div class="form-text">Maximum 15 characters, letters only</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-user"></i> Owner First Name
                                 </label>
                                 <input type="text" class="form-control" name="ownerFirstName" 
-                                       value="{{ request.form.ownerFirstName }}"
+                                       value="{{ form_data.get('ownerFirstName', '') }}"
                                        maxlength="15"
                                        onkeypress="return /[a-zA-Z\s-']/.test(event.key)"
-                                       pattern="[a-zA-Z\s-']*"
-                                       required>
+                                       pattern="[a-zA-Z\s-']*">
                                 <div class="form-text">Maximum 15 characters, letters only</div>
                             </div>
                             <div class="col-12">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-map-marker-alt"></i> Street
                                 </label>
-                                <input type="text" class="form-control" name="ownerStreet" value="{{ request.form.ownerStreet }}" required>
+                                <input type="text" class="form-control" name="ownerStreet" value="{{ form_data.get('ownerStreet', '') }}">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-city"></i> City
                                 </label>
-                                <input type="text" class="form-control" name="ownerCity" value="{{ request.form.ownerCity }}" required>
+                                <input type="text" class="form-control" name="ownerCity" value="{{ form_data.get('ownerCity', '') }}">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-flag-usa"></i> State
                                 </label>
                                 <input type="text" class="form-control" name="ownerState" 
-                                       value="{{ request.form.ownerState }}"
+                                       value="{{ form_data.get('ownerState', '') }}"
                                        maxlength="2"
                                        onkeypress="return /[A-Za-z]/.test(event.key)"
                                        pattern="[A-Z]{2}"
                                        style="text-transform: uppercase;"
-                                       oninput="this.value = this.value.toUpperCase()"
-                                       required>
+                                       oninput="this.value = this.value.toUpperCase()">
                                 <div class="form-text">2 capital letters only (e.g., SC)</div>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-map-pin"></i> ZIP
                                 </label>
                                 <input type="text" class="form-control" name="ownerZip" 
-                                       value="{{ request.form.ownerZip }}"
+                                       value="{{ form_data.get('ownerZip', '') }}"
                                        maxlength="5"
                                        onkeypress="return /[0-9]/.test(event.key)"
                                        pattern="[0-9]{5}"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 <div class="form-text">5 digits only (e.g., 12345)</div>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-phone"></i> Area Code
                                 </label>
                                 <input type="text" class="form-control" name="ownerAreaCode" 
-                                       value="{{ request.form.ownerAreaCode }}"
+                                       value="{{ form_data.get('ownerAreaCode', '') }}"
                                        maxlength="3"
                                        onkeypress="return /[0-9]/.test(event.key)"
                                        pattern="[0-9]{3}"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 <div class="form-text">3 digits only (e.g., 864)</div>
                             </div>
                             <div class="col-md-8">
-                                <label class="form-label required-field">
+                                <label class="form-label">
                                     <i class="fas fa-phone"></i> Number
                                 </label>
                                 <input type="text" class="form-control" name="ownerPhoneNumber" 
-                                       value="{{ request.form.ownerPhoneNumber }}"
+                                       value="{{ form_data.get('ownerPhoneNumber', '') }}"
                                        maxlength="7"
                                        onkeypress="return /[0-9]/.test(event.key)"
                                        pattern="[0-9]{7}"
-                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                       required>
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 <div class="form-text">7 digits only (e.g., 5551234)</div>
                             </div>
                         </div>
@@ -686,22 +705,28 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">
-                                        <i class="fas fa-user"></i> Collector Last Name
+                                        <i class="fas fa-user"></i> Buyer Last Name
                                         <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control" name="buyerLastName"
-                                        value="{{ form_data.get('buyerLastName', '') }}"
-                                        maxlength="15" pattern="[A-Za-z]+" required>
+                                           value="{{ form_data.get('buyerLastName', '') }}"
+                                           maxlength="15"
+                                           pattern="[a-zA-Z\s'\-]*"
+                                           title="Only letters, spaces, hyphens, and apostrophes allowed"
+                                           required>
                                     <div class="form-text">Letters only, max 15 characters</div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">
-                                        <i class="fas fa-user"></i> Collector First Name
+                                        <i class="fas fa-user"></i> Buyer First Name
                                         <span class="text-danger">*</span>
                                     </label>
                                     <input type="text" class="form-control" name="buyerFirstName"
-                                        value="{{ form_data.get('buyerFirstName', '') }}"
-                                        maxlength="15" pattern="[A-Za-z]+" required>
+                                           value="{{ form_data.get('buyerFirstName', '') }}"
+                                           maxlength="15"
+                                           pattern="[a-zA-Z\s'\-]*"
+                                           title="Only letters, spaces, hyphens, and apostrophes allowed"
+                                           required>
                                     <div class="form-text">Letters only, max 15 characters</div>
                                 </div>
                                 <div class="col-12">
@@ -754,25 +779,25 @@
                                 <label class="form-label required-field">
                                     <i class="fas fa-tag"></i> Sale Price
                                 </label>
-                                <input type="number" step="0.01" min="0" max="99999.99" class="form-control" name="salePrice" 
-                                       value="{{ form_data.salePrice if form_data else '' }}" required>
-                                <div class="form-text">Enter sale price in USD (max: 99,999.99)</div>
+                                <input type="number" step="0.01" min="0" max="999999.99" class="form-control" name="salePrice" 
+                                       value="{{ form_data.get('salePrice', '') }}" required>
+                                <div class="form-text">Enter sale price in USD (max: 999,999.99)</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required-field">
                                     <i class="fas fa-dollar-sign"></i> Sale Tax
                                 </label>
-                                <input type="number" step="0.01" min="0" max="999.99" class="form-control" name="saleTax" 
-                                       value="{{ form_data.saleTax if form_data else '' }}" required>
-                                <div class="form-text">Enter tax amount in USD (max: 999.99)</div>
+                                <input type="number" step="0.01" min="0" max="9999.99" class="form-control" name="saleTax" 
+                                       value="{{ form_data.get('saleTax', '') }}" required>
+                                <div class="form-text">Enter tax amount in USD (max: 9,999.99)</div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label required-field">
                                     <i class="fas fa-money-bill-wave"></i> Amount Remitted To Owner
                                 </label>
-                                <input type="number" step="0.01" min="0" max="99999.99" class="form-control" name="amountRemittedToOwner" 
-                                       value="{{ form_data.amountRemittedToOwner if form_data else '' }}" required>
-                                <div class="form-text">Amount to be paid to the owner (max: 99,999.99)</div>
+                                <input type="number" step="0.01" min="0" max="999999.99" class="form-control" name="amountRemittedToOwner" 
+                                       value="{{ form_data.get('amountRemittedToOwner', '') }}" required>
+                                <div class="form-text">Amount to be paid to the owner (max: 999,999.99)</div>
                             </div>
                         </div>
                     </div>
@@ -786,7 +811,7 @@
                                     <i class="fas fa-id-card"></i> Salesperson SSN
                                 </label>
                                 <input type="text" class="form-control" name="salespersonSSN" 
-                                       value="{{ form_data.salespersonSSN if form_data else '' }}"
+                                       value="{{ form_data.get('salespersonSSN', '') }}"
                                        maxlength="9"
                                        onkeypress="return /[0-9]/.test(event.key)"
                                        pattern="[0-9]{9}"
@@ -799,7 +824,7 @@
                                     <i class="fas fa-calendar"></i> Sale Date
                                 </label>
                                 <input type="date" class="form-control" name="saleDate" 
-                                       value="{{ form_data.saleDate if form_data else '' }}" required>
+                                       value="{{ form_data.get('saleDate', '') }}" required>
                                 <div class="form-text">Date of sale</div>
                             </div>
                         </div>
@@ -837,27 +862,42 @@
                         console.log('Found form with needs-validation class');
                         form.addEventListener('submit', function (event) {
                             console.log('Form submission attempted');
+                            
                             if (!form.checkValidity()) {
                                 console.log('Form validation failed');
-                                event.preventDefault()
-                                event.stopPropagation()
+                                event.preventDefault();
+                                event.stopPropagation();
                             } else {
                                 console.log('Form validation passed, submitting...');
+                                // Let the form submit naturally
                             }
-                            form.classList.add('was-validated')
-                        }, false)
+                            
+                            form.classList.add('was-validated');
+                        }, false);
                     }
-                })
-            })()
+                });
+            })();
 
-            // Handle name fields paste events
-            const nameInputs = document.querySelectorAll('input[name="artistFirstName"], input[name="artistLastName"], input[name="artworkTitle"], input[name="buyerFirstName"], input[name="buyerLastName"]');
+            // Function to validate name input
+            function validateNameInput(event) {
+                const pattern = /^[a-zA-Z\s'\-]*$/;
+                const key = event.key;
+                if (!pattern.test(key) && key !== 'Backspace' && key !== 'Delete' && key !== 'ArrowLeft' && key !== 'ArrowRight') {
+                    event.preventDefault();
+                    return false;
+                }
+                return true;
+            }
+
+            // Apply validation to all name input fields
+            const nameInputs = document.querySelectorAll('input[pattern]');
             nameInputs.forEach(input => {
-                if (input) {
+                if (input.pattern === '[a-zA-Z\\s\'\\-]*') {
+                    input.addEventListener('keypress', validateNameInput);
                     input.addEventListener('paste', function(e) {
                         e.preventDefault();
                         const text = (e.clipboardData || window.clipboardData).getData('text');
-                        const cleanText = text.replace(/[^a-zA-Z\s\-']/g, '');
+                        const cleanText = text.replace(/[^a-zA-Z\s'\-]/g, '');
                         if (cleanText) {
                             document.execCommand('insertText', false, cleanText);
                         }
@@ -893,7 +933,8 @@
             const numericFields = [
                 { element: document.querySelector('input[name="buyerAreaCode"]'), length: 3 },
                 { element: document.querySelector('input[name="buyerPhoneNumber"]'), length: 7 },
-                { element: document.querySelector('input[name="buyerZip"]'), length: 5 }
+                { element: document.querySelector('input[name="buyerZip"]'), length: 5 },
+                { element: document.querySelector('input[name="salespersonSSN"]'), length: 9 }
             ];
 
             numericFields.forEach(field => {
@@ -902,43 +943,72 @@
                 }
             });
 
-            // User menu toggle
-            const userButton = document.querySelector('.user-button');
-            const userMenu = document.querySelector('.user-menu');
-            
-            if (userButton && userMenu) {
-                userButton.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    userMenu.classList.toggle('active');
-                });
-                
-                // Close menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (userMenu && !userMenu.contains(e.target)) {
-                        userMenu.classList.remove('active');
-                    }
-                });
-            }
+            // Add validation for owner fields
+            const ownerFields = document.querySelectorAll('input[name^="owner"]');
+            const ownerFieldsContainer = document.querySelector('.form-section:nth-child(2)');
 
-            // Forms menu toggle
-            function toggleFormsMenu(button) {
-                if (button) {
-                    const menu = button.closest('.forms-menu');
-                    if (menu) {
-                        menu.classList.toggle('active');
+            if (ownerFields.length && ownerFieldsContainer) {
+                function validateOwnerFields() {
+                    let hasValue = false;
+                    let allValid = true;
+
+                    ownerFields.forEach(field => {
+                        if (field.value.trim() !== '') {
+                            hasValue = true;
+                            if (field.pattern && !field.value.match(new RegExp(field.pattern))) {
+                                allValid = false;
+                                field.classList.add('is-invalid');
+                            } else {
+                                field.classList.remove('is-invalid');
+                            }
+                        }
+                    });
+
+                    if (!hasValue) {
+                        ownerFields.forEach(field => {
+                            field.classList.remove('is-invalid');
+                            field.classList.remove('is-valid');
+                        });
+                        return true;
                     }
+
+                    if (hasValue) {
+                        ownerFields.forEach(field => {
+                            if (!field.value.trim()) {
+                                allValid = false;
+                                field.classList.add('is-invalid');
+                            }
+                        });
+                    }
+
+                    return allValid;
                 }
-            }
 
-            // Close the forms menu when clicking outside
-            document.addEventListener('click', function(event) {
-                const formsMenus = document.querySelectorAll('.forms-menu');
+                ownerFields.forEach(field => {
+                    field.addEventListener('input', validateOwnerFields);
+                    field.addEventListener('blur', validateOwnerFields);
+                });
+            }
+        });
+
+        function toggleFormsMenu(button) {
+            if (!button) return;
+            const menu = button.closest('.forms-menu');
+            if (menu) {
+                menu.classList.toggle('active');
+            }
+        }
+
+        // Close the forms menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const formsMenus = document.querySelectorAll('.forms-menu');
+            if (formsMenus.length) {
                 formsMenus.forEach(menu => {
-                    if (menu && !menu.contains(event.target)) {
+                    if (!menu.contains(event.target)) {
                         menu.classList.remove('active');
                     }
                 });
-            });
+            }
         });
     </script>
 </body>
